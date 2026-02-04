@@ -62,7 +62,7 @@ const Navigation = () => {
               {name}
             </motion.div>
           </Link>
-          <div className="flex items-center space-x-2 grow">
+          <div className="hidden md:flex items-center space-x-2 grow">
             <RandomJoke />
           </div>
 
