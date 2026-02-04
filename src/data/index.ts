@@ -237,4 +237,7 @@ export const skills: Skill[] = [
   { id: "38", name: "Communication", level: "expert", category: "Soft Skills" },
   { id: "39", name: "Leadership", level: "advanced", category: "Soft Skills" },
   { id: "41", name: "OpenCode", level: "intermediate", category: "Tools" },
+  { id: "42", name: "Travail en SaaS", level: "advanced", category: "Soft Skills" },
+  { id: "43", name: "Travail en startup", level: "advanced", category: "Soft Skills" },
+  { id: "44", name: "gestion de projet", level: "advanced", category: "Soft Skills" },
 ];
