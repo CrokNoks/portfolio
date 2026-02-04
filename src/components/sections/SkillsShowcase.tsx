@@ -93,7 +93,7 @@ const SkillsShowcase = () => {
                         {skill.level}
                       </span>
                     </div>
-                    <div className="w-full bg-secondary rounded-full h-2 bg-gradient-to-r from-gray-500 to-gray-700 relative">
+                    <div className="w-full rounded-full h-2 bg-gray-200 dark:bg-gray-700 relative">
                       <motion.div
                         className={`h-2 rounded-full bg-gradient-to-r ${getCategoryColor(category)}`}
                         initial={{ width: 0 }}
