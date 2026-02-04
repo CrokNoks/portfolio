@@ -15,7 +15,6 @@ const Navigation = () => {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-    
     setIsDark(shouldBeDark);
     
     if (shouldBeDark) {
