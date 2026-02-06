@@ -1,5 +1,5 @@
-import { Project, Experience, Skill } from "@/types";
-import { Github, Linkedin, Mail, User, Award, Target,ExternalLink } from "lucide-react";
+import { Project, Experience, Skill, Hobby } from "@/types";
+import { Github, Linkedin, Mail, User, Award, Target, ExternalLink, Calendar, Gamepad2, Package, Film } from "lucide-react";
 
 export const name = "Lucas GUERRIER";
 
@@ -53,6 +53,7 @@ export const aboutStats = [
     value: "100%",
     label: "Satisfaction client",
   },
+  { icon: Calendar, value: "2004", label: "Apprentissage du développement web" },
   {
     icon: Award,
     value: "2018 - 2026",
@@ -239,5 +240,32 @@ export const skills: Skill[] = [
   { id: "41", name: "OpenCode", level: "intermediate", category: "Tools" },
   { id: "42", name: "Travail en SaaS", level: "advanced", category: "Soft Skills" },
   { id: "43", name: "Travail en startup", level: "advanced", category: "Soft Skills" },
-  { id: "44", name: "gestion de projet", level: "advanced", category: "Soft Skills" },
+  { id: "44", name: "Gestion de projet", level: "advanced", category: "Soft Skills" },
+  { id: "45", name: "Refonte d'applications legacy", level: "advanced", category: "Soft Skills" },
+  { id: "46", name: "Architecture logicielle", level: "advanced", category: "Soft Skills" },
+  { id: "47", name: "Conception d'API Rest", level: "expert", category: "Soft Skills" },
+];
+
+export const hobbies: Hobby[] = [
+  { 
+    id: "1", 
+    label: "Jeux Vidéos", 
+    description: "Passionné de jeux vidéo depuis l'enfance, j'apprécie particulièrement les RPG, les jeux de stratégie et les sandbox.",
+    icon: Gamepad2,
+    skills: ["Gestion des ressources et optimisation", "Prise de décision et responsabilité","Créativité opérationnelle", "Persévérance"]
+  },
+  { 
+    id: "2", 
+    label: "Lego", 
+    description: "Collectionneur de sets Lego, j'aime construire des modèles complexes et créatifs.",
+    icon: Package,
+    skills: ["Rigueur et suivi de processus", "Créativité", "Patience"]
+  },
+  { 
+    id: "3", 
+    label: "Films & Séries", 
+    description: "Grand amateur de cinéma et de séries, j'apprécie la science fiction et le fantastique.",
+    icon: Film,
+    skills: ["Ouverture d'esprit et adaptabilité", "Capacité d'abstraction","Curiosité intellectuelle"]
+  }
 ];

@@ -26,7 +26,17 @@ export interface Skill {
   category: string;
 }
 
+import { LucideIcon } from 'lucide-react';
+
 export interface NavigationItem {
   name: string;
   href: string;
+}
+
+export interface Hobby {
+  id: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+  skills?: string[];
 }
