@@ -24,6 +24,7 @@ export interface Skill {
   name: string;
   level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
   category: string;
+  skillType: 'technical' | 'soft';
 }
 
 import { LucideIcon } from 'lucide-react';

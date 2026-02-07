@@ -177,74 +177,77 @@ export const levelSkillsOrders: Record<string, number> = {
   expert: 4,
 };
 
-export const skills: Skill[] = [
+export const technicalSkills: Skill[] = [
   // Languages & Frameworks - Expert
-  { id: "1", name: "JavaScript", level: "expert", category: "Frontend" },
-  { id: "2", name: "PHP", level: "expert", category: "Backend" },
+  { id: "1", name: "JavaScript", level: "expert", category: "Frontend", skillType: "technical" },
+  { id: "2", name: "PHP", level: "expert", category: "Backend", skillType: "technical" },
 
   // Languages & Frameworks - Senior
-  { id: "3", name: "Node.js", level: "expert", category: "Backend" },
-  { id: "4", name: "NestJS", level: "advanced", category: "Backend" },
-  { id: "5", name: "ExpressJS", level: "advanced", category: "Backend" },
-  { id: "6", name: "TypeScript", level: "advanced", category: "Frontend" },
-  { id: "7", name: "ReactJS", level: "advanced", category: "Frontend" },
-  { id: "8", name: "React-Admin", level: "advanced", category: "Frontend" },
-  { id: "9", name: "Jest", level: "advanced", category: "Tools" },
-  { id: "10", name: "Cypress", level: "advanced", category: "Tools" },
-  { id: "11", name: "Swagger/OpenAPI", level: "advanced", category: "Tools" },
+  { id: "3", name: "Node.js", level: "expert", category: "Backend", skillType: "technical" },
+  { id: "4", name: "NestJS", level: "advanced", category: "Backend", skillType: "technical" },
+  { id: "5", name: "ExpressJS", level: "advanced", category: "Backend", skillType: "technical" },
+  { id: "6", name: "TypeScript", level: "advanced", category: "Frontend", skillType: "technical" },
+  { id: "7", name: "ReactJS", level: "advanced", category: "Frontend", skillType: "technical" },
+  { id: "8", name: "React-Admin", level: "advanced", category: "Frontend", skillType: "technical" },
+  { id: "9", name: "Jest", level: "advanced", category: "Tools", skillType: "technical" },
+  { id: "10", name: "Cypress", level: "advanced", category: "Tools", skillType: "technical" },
+  { id: "11", name: "Swagger/OpenAPI", level: "advanced", category: "Tools", skillType: "technical" },
 
   // Languages & Frameworks - Confirmé
-  { id: "12", name: "C# .NET", level: "beginner", category: "Backend" },
-  { id: "13", name: "Python", level: "beginner", category: "Backend" },
-  { id: "14", name: "Symfony", level: "intermediate", category: "Backend" },
+  { id: "12", name: "C# .NET", level: "beginner", category: "Backend", skillType: "technical" },
+  { id: "13", name: "Python", level: "beginner", category: "Backend", skillType: "technical" },
+  { id: "14", name: "Symfony", level: "intermediate", category: "Backend", skillType: "technical" },
 
   // Databases
-  { id: "15", name: "PostgreSQL", level: "advanced", category: "Database" },
-  { id: "16", name: "MySQL", level: "advanced", category: "Database" },
-  { id: "17", name: "MongoDB", level: "advanced", category: "Database" },
-  {
-    id: "18",
-    name: "ElasticSearch",
-    level: "intermediate",
-    category: "Database",
-  },
+  { id: "15", name: "PostgreSQL", level: "advanced", category: "Database", skillType: "technical" },
+  { id: "16", name: "MySQL", level: "advanced", category: "Database", skillType: "technical" },
+  { id: "17", name: "MongoDB", level: "advanced", category: "Database", skillType: "technical" },
+  { id: "18", name: "ElasticSearch", level: "intermediate", category: "Database", skillType: "technical" },
 
   // Tools & Deployment
-  { id: "19", name: "Docker", level: "intermediate", category: "DevOps" },
-  { id: "20", name: "GitLab CI/CD", level: "advanced", category: "DevOps" },
-  { id: "21", name: "PM2", level: "advanced", category: "DevOps" },
-  { id: "22", name: "Nginx", level: "advanced", category: "DevOps" },
-  { id: "23", name: "Infisical", level: "intermediate", category: "DevOps" },
-  { id: "24", name: "Firebase", level: "advanced", category: "DevOps" },
-  { id: "25", name: "GitHub Copilot", level: "advanced", category: "Tools" },
+  { id: "19", name: "Docker", level: "intermediate", category: "DevOps", skillType: "technical" },
+  { id: "20", name: "GitLab CI/CD", level: "advanced", category: "DevOps", skillType: "technical" },
+  { id: "21", name: "PM2", level: "advanced", category: "DevOps", skillType: "technical" },
+  { id: "22", name: "Nginx", level: "advanced", category: "DevOps", skillType: "technical" },
+  { id: "23", name: "Infisical", level: "intermediate", category: "DevOps", skillType: "technical" },
+  { id: "24", name: "Firebase", level: "advanced", category: "DevOps", skillType: "technical" },
+  { id: "25", name: "GitHub Copilot", level: "advanced", category: "Tools", skillType: "technical" },
 
-  // Other skills
-  {
-    id: "26",
-    name: "Gestion d'équipe",
-    level: "advanced",
-    category: "Soft Skills",
-  },
-  { id: "27", name: "Mentoring", level: "expert", category: "Soft Skills" },
-  { id: "28", name: "Code review", level: "advanced", category: "Soft Skills" },
-  { id: "29", name: "GitFlow", level: "expert", category: "Tools" },
-  { id: "30", name: "Java", level: "beginner", category: "Backend" },
-  { id: "31", name: "Coldfusion", level: "intermediate", category: "Backend" },
-  { id: "32", name: "Tailwind CSS", level: "intermediate", category: "Frontend" },
-  { id: "33", name: "Next.js", level: "intermediate", category: "Frontend" },
-  { id: "34", name: "Supabase", level: "intermediate", category: "Database" },
-  { id: "36", name: "Linux baremetal", level: "intermediate", category: "DevOps" },
-  { id: "37", name: "Agile/Scrum", level: "intermediate", category: "Soft Skills" },
-  { id: "38", name: "Communication", level: "expert", category: "Soft Skills" },
-  { id: "39", name: "Leadership", level: "advanced", category: "Soft Skills" },
-  { id: "41", name: "OpenCode", level: "intermediate", category: "Tools" },
-  { id: "42", name: "Travail en SaaS", level: "advanced", category: "Soft Skills" },
-  { id: "43", name: "Travail en startup", level: "advanced", category: "Soft Skills" },
-  { id: "44", name: "Gestion de projet", level: "advanced", category: "Soft Skills" },
-  { id: "45", name: "Refonte d'applications legacy", level: "advanced", category: "Soft Skills" },
-  { id: "46", name: "Architecture logicielle", level: "advanced", category: "Soft Skills" },
-  { id: "47", name: "Conception d'API Rest", level: "expert", category: "Soft Skills" },
+  // Technical Tools
+  { id: "29", name: "GitFlow", level: "expert", category: "Tools", skillType: "technical" },
+  { id: "30", name: "Java", level: "beginner", category: "Backend", skillType: "technical" },
+  { id: "31", name: "Coldfusion", level: "intermediate", category: "Backend", skillType: "technical" },
+  { id: "32", name: "Tailwind CSS", level: "intermediate", category: "Frontend", skillType: "technical" },
+  { id: "33", name: "Next.js", level: "intermediate", category: "Frontend", skillType: "technical" },
+  { id: "34", name: "Supabase", level: "intermediate", category: "Database", skillType: "technical" },
+  { id: "36", name: "Linux baremetal", level: "intermediate", category: "DevOps", skillType: "technical" },
+  { id: "41", name: "OpenCode", level: "intermediate", category: "Tools", skillType: "technical" },
 ];
+
+export const softSkills: Skill[] = [
+  // Leadership & Management
+  { id: "26", name: "Gestion d'équipe", level: "advanced", category: "Leadership & Management", skillType: "soft" },
+  { id: "27", name: "Mentoring", level: "expert", category: "Leadership & Management", skillType: "soft" },
+  { id: "39", name: "Leadership", level: "advanced", category: "Leadership & Management", skillType: "soft" },
+
+  // Communication & Collaboration
+  { id: "38", name: "Communication", level: "expert", category: "Communication & Collaboration", skillType: "soft" },
+  { id: "37", name: "Agile/Scrum", level: "intermediate", category: "Communication & Collaboration", skillType: "soft" },
+  { id: "28", name: "Code review", level: "advanced", category: "Communication & Collaboration", skillType: "soft" },
+
+  // Méthodologie & Process
+  { id: "44", name: "Gestion de projet", level: "advanced", category: "Méthodologie & Process", skillType: "soft" },
+  { id: "46", name: "Architecture logicielle", level: "advanced", category: "Méthodologie & Process", skillType: "soft" },
+  { id: "47", name: "Conception d'API Rest", level: "expert", category: "Méthodologie & Process", skillType: "soft" },
+
+  // Adaptabilité & Innovation
+  { id: "42", name: "Travail en SaaS", level: "advanced", category: "Adaptabilité & Innovation", skillType: "soft" },
+  { id: "43", name: "Travail en startup", level: "advanced", category: "Adaptabilité & Innovation", skillType: "soft" },
+  { id: "45", name: "Refonte d'applications legacy", level: "advanced", category: "Adaptabilité & Innovation", skillType: "soft" },
+];
+
+// Maintenir l'ancien array pour compatibilité (optionnel)
+export const skills = [...technicalSkills, ...softSkills];
 
 export const hobbies: Hobby[] = [
   { 

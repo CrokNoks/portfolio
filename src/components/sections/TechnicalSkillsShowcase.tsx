@@ -1,18 +1,17 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { levelSkillsOrders, skills } from '@/data';
-import { Code, Database, Globe, Server, Smartphone, Palette, Lightbulb } from 'lucide-react';
+import { levelSkillsOrders, technicalSkills } from '@/data';
+import { Code, Database, Globe, Server, Smartphone, Palette } from 'lucide-react';
 
-const SkillsShowcase = () => {
+const TechnicalSkillsShowcase = () => {
   const categoryIcons = {
     Frontend: Code,
     Backend: Server,
     Database: Database,
     DevOps: Globe,
     Tools: Smartphone,
-    Design: Palette,
-    'Soft Skills': Lightbulb
+    Design: Palette
   };
 
   const getCategoryColor = (category: string) => {
@@ -22,8 +21,7 @@ const SkillsShowcase = () => {
       Database: 'from-orange-500 to-red-500',
       DevOps: 'from-purple-500 to-pink-500',
       Tools: 'from-cyan-500 to-gray-500',
-      Design: 'from-pink-500 to-rose-500',
-      'Soft Skills': 'from-yellow-500 to-lime-500'
+      Design: 'from-pink-500 to-rose-500'
     };
     return colors[category as keyof typeof colors] || 'from-gray-500 to-gray-700';
   };
@@ -38,13 +36,13 @@ const SkillsShowcase = () => {
     return widths[level as keyof typeof widths] || '25%';
   };
 
-  const groupedSkills = skills.reduce((acc, skill) => {
+  const groupedSkills = technicalSkills.reduce((acc, skill) => {
     if (!acc[skill.category]) {
       acc[skill.category] = [];
     }
     acc[skill.category].push(skill);
     return acc;
-  }, {} as Record<string, typeof skills>);
+  }, {} as Record<string, typeof technicalSkills>);
 
   return (
     <section className="py-20">
@@ -113,4 +111,4 @@ const SkillsShowcase = () => {
   );
 };
 
-export default SkillsShowcase;
+export default TechnicalSkillsShowcase;
