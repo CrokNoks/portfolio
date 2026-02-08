@@ -41,3 +41,18 @@ export interface Hobby {
   icon: LucideIcon;
   skills?: string[];
 }
+
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  category: 'techniques' | 'veille-techno' | 'experiences';
+  tags: string[];
+  publishedAt: string;
+  readTime?: number;
+  featured: boolean;
+  author: string;
+  image: string;
+  content?: string;
+}

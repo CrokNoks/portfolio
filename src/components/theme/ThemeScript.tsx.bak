@@ -1,0 +1,28 @@
+'use client';
+
+export function ThemeScript() {
+  const themeScript = `
+    (function() {
+      function getTheme() {
+        try {
+          const stored = localStorage.getItem('theme');
+          if (stored) return stored;
+          
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          return prefersDark ? 'dark' : 'light';
+        } catch (e) {
+          return 'light';
+        }
+      }
+      
+      const theme = getTheme();
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    })();
+  `;
+
+  return (
+    <script
+      dangerouslySetInnerHTML={{ __html: themeScript }}
+    />
+  );
+}

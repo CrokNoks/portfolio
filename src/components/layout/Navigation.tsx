@@ -2,45 +2,26 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Menu, X, Moon, Sun } from 'lucide-react';
 import { name } from '@/data';
 import RandomJoke from '../ui/RandomJoke';
+import { useTheme } from '@/components/theme/ThemeProvider';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-    setIsDark(shouldBeDark);
-    
-    if (shouldBeDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
+  const { theme, setTheme, isDark } = useTheme();
 
   const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    const newTheme = theme === 'dark' ? 'light' : theme === 'light' ? 'dark' : 'system';
+    setTheme(newTheme);
   };
 
   const navItems = [
     { name: 'Accueil', href: '/' },
     { name: 'À propos', href: '/about' },
     { name: 'Projets', href: '/projects' },
+    { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' }
   ];
 
@@ -80,6 +61,7 @@ const Navigation = () => {
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-accent transition-colors"
+              aria-label="Toggle theme"
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -90,12 +72,14 @@ const Navigation = () => {
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-accent transition-colors"
+              aria-label="Toggle theme"
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-lg hover:bg-accent transition-colors"
+              aria-label="Toggle menu"
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
