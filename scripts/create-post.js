@@ -3,7 +3,27 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
-const { generateSlug, getCategoryDirectory } = require('../lib/blog/validation');
+// Fonctions utilitaires extraites de validation.ts
+function generateSlug(title, date) {
+  const normalizedTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+  
+  return `${date}-${normalizedTitle}`;
+}
+
+function getCategoryDirectory(category) {
+  const categoryMap = {
+    'techniques': 'techniques',
+    'veille-techno': 'veille-techno',
+    'experiences': 'experiences'
+  };
+  
+  return categoryMap[category] || 'techniques';
+}
 
 const postsDirectory = path.join(__dirname, '../content/blog');
 
