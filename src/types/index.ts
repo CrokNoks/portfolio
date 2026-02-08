@@ -55,4 +55,30 @@ export interface BlogPost {
   author: string;
   image: string;
   content?: string;
+  // Champs pour les séries
+  series?: string;           // ID de la série (extrait du chemin)
+  seriesTitle?: string;      // Titre de la série (de SERIES.md)
+  seriesPart?: number;       // Position dans la série (du nom de fichier)
+  seriesColor?: string;      // Couleur de la série (de SERIES.md)
+  seriesTotalExpected?: number; // Total attendu (de SERIES.md)
+  isSeriesArticle?: boolean;  // Flag pour différencier les articles de série
+}
+
+export interface SeriesMetadata {
+  title: string;
+  description?: string;
+  color?: string;
+  totalExpected?: number;
+}
+
+export interface Series {
+  id: string;
+  title: string;
+  description?: string;
+  color?: string;
+  posts: BlogPost[];
+  totalPosts: number;
+  totalExpected?: number;
+  isComplete: boolean;
+  category: string;
 }

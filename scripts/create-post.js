@@ -5,6 +5,94 @@ const path = require('path');
 const readline = require('readline');
 const { generateSlug, getCategoryDirectory } = require('../lib/blog/validation');
 
+const postsDirectory = path.join(__dirname, '../content/blog');
+
+// Fonctions pour les séries
+function getExistingSeries(category) {
+  const categoryPath = path.join(postsDirectory, category);
+  if (!fs.existsSync(categoryPath)) return [];
+  
+  const items = fs.readdirSync(categoryPath);
+  return items.filter(item => {
+    const itemPath = path.join(categoryPath, item);
+    return fs.statSync(itemPath).isDirectory();
+  });
+}
+
+function getNextPartNumber(seriesPath) {
+  if (!fs.existsSync(seriesPath)) return 1;
+  
+  const files = fs.readdirSync(seriesPath);
+  const numbers = files
+    .filter(file => file.endsWith('.mdx'))
+    .map(file => {
+      const match = file.match(/^(\d+)-/);
+      return match ? parseInt(match[1]) : 0;
+    })
+    .filter(num => num > 0);
+  
+  return numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
+}
+
+function createSeriesMetadata(seriesPath, title, color, totalExpected) {
+  const content = `---
+title: "${title}"
+description: "Série complète pour apprendre ${title.toLowerCase()}"
+color: "${color}"
+${totalExpected ? `totalExpected: ${totalExpected}` : ''}
+---
+`;
+
+  const seriesFile = path.join(seriesPath, 'SERIES.md');
+  fs.writeFileSync(seriesFile, content, 'utf8');
+  return true;
+}
+
+function generateSeriesMDXContent(data) {
+  const content = `---
+title: "${data.title}"
+description: "${data.description}"
+category: "${data.category}"
+tags: [${data.tags.map(tag => `"${tag}"`).join(', ')}]
+publishedAt: "${data.publishedAt}"
+featured: ${data.featured || false}
+author: "Lucas GUERRIER"
+image: "${data.image}"
+---
+
+# ${data.title}
+
+${data.description || ''}
+
+## Contenu à compléter
+
+Ajoutez votre contenu ici en utilisant les composants disponibles :
+
+### Code avec syntax highlighting
+\`\`\`jsx
+// votre code ici
+\`\`\`
+
+### Notes importantes
+> Utilisez les Callout pour attirer l'attention
+
+### Technologies utilisées
+Affichez les technologies avec le composant TechStack
+
+---
+
+**Instructions :**
+1. Complétez le contenu de votre article
+2. Utilisez les composants MDX : CodeBlock, Callout, TechStack
+3. Sauvegardez le fichier
+4. Le build générera automatiquement les pages statiques
+
+**Cet article fait partie de la série :** ${data.seriesTitle}
+`;
+
+  return content;
+}
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -83,14 +171,108 @@ async function createPost() {
   console.log('🚀 Création d\'un nouvel article pour le blog\\n');
 
   try {
-    // Récupérer les informations de l'utilisateur
+    // Demander si c'est un article de série
+    const seriesChoice = await questionWithChoices(
+      '📚 Cet article appartient-il à une série ?',
+      ['non - Article autonome', 'oui - Article dans une série existante', 'créer - Créer une nouvelle série']
+    );
+
+    let seriesData = null;
+    let isSeriesArticle = false;
+
+    if (seriesChoice === 'créer - Créer une nouvelle série') {
+      // Créer une nouvelle série
+      const seriesTitle = await question('🎯 Titre de la série : ');
+      const seriesId = seriesTitle.toLowerCase()
+        .replace(/[^a-z0-9\\s-]/g, '')
+        .replace(/\\s+/g, '-');
+      
+      const colorChoices = [
+        'from-blue-500 to-purple-500',
+        'from-green-500 to-teal-500',
+        'from-orange-500 to-red-500',
+        'from-pink-500 to-rose-500',
+        'from-indigo-500 to-blue-500',
+        'from-yellow-500 to-orange-500'
+      ];
+      
+      const color = await questionWithChoices(
+        '🎨 Couleur de la série :',
+        colorChoices
+      );
+      
+      const totalExpected = await question('📊 Nombre total d\'articles prévus (optionnel, laissez vide si inconnu) : ');
+      const total = totalExpected.trim() === '' ? null : parseInt(totalExpected);
+
+      seriesData = {
+        id: seriesId,
+        title: seriesTitle,
+        color: color,
+        totalExpected: total,
+        isNew: true
+      };
+      isSeriesArticle = true;
+
+    } else if (seriesChoice === 'oui - Article dans une série existante') {
+      // Choisir une série existante
+      const category = await questionWithChoices(
+        '📂 Catégorie de la série :',
+        ['techniques', 'veille-techno', 'experiences']
+      );
+      
+      const existingSeries = getExistingSeries(category);
+      if (existingSeries.length === 0) {
+        console.log('❌ Aucune série existante dans cette catégorie.');
+        process.exit(1);
+      }
+      
+      const seriesChoice = await questionWithChoices(
+        '📚 Quelle série ?',
+        existingSeries
+      );
+      
+      const seriesPath = path.join(postsDirectory, category, seriesChoice);
+      const seriesFile = path.join(seriesPath, 'SERIES.md');
+      
+      let seriesTitle = seriesChoice;
+      let color = 'from-gray-500 to-gray-700';
+      let totalExpected = null;
+      
+      if (fs.existsSync(seriesFile)) {
+        const content = fs.readFileSync(seriesFile, 'utf8');
+        const titleMatch = content.match(/title: "([^"]+)"/);
+        const colorMatch = content.match(/color: "([^"]+)"/);
+        const totalMatch = content.match(/totalExpected: (\\d+)/);
+        
+        if (titleMatch) seriesTitle = titleMatch[1];
+        if (colorMatch) color = colorMatch[1];
+        if (totalMatch) totalExpected = parseInt(totalMatch[1]);
+      }
+      
+      seriesData = {
+        id: seriesChoice,
+        title: seriesTitle,
+        color: color,
+        totalExpected: totalExpected,
+        category: category,
+        isNew: false
+      };
+      isSeriesArticle = true;
+    }
+
+    // Récupérer les informations de l'article
     const title = await question('📝 Titre de l\'article : ');
     const description = await question('📄 Description courte (pour SEO) : ');
     
-    const category = await questionWithChoices(
-      '📂 Catégorie de l\'article :',
-      ['techniques', 'veille-techno', 'experiences']
-    );
+    let category;
+    if (!isSeriesArticle || seriesData.isNew) {
+      category = await questionWithChoices(
+        '📂 Catégorie de l\'article :',
+        ['techniques', 'veille-techno', 'experiences']
+      );
+    } else {
+      category = seriesData.category;
+    }
     
     const tagsInput = await question('🏷️  Tags (séparés par des virgules) : ');
     const tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
@@ -105,27 +287,63 @@ async function createPost() {
     // Date actuelle
     const publishedAt = new Date().toISOString().split('T')[0];
     
-    // Générer le slug
-    const slug = generateSlug(title, publishedAt);
-    
-    // Obtenir le nom de fichier
-    const categoryDir = getCategoryDirectory(category);
-    const fileName = `${publishedAt}-${slug}.mdx`;
-    const filePath = path.join(__dirname, `../content/blog/${categoryDir}/${fileName}`);
-    
-    // Données pour la génération
-    const postData = {
-      title,
-      description,
-      category,
-      tags,
-      publishedAt,
-      featured,
-      image
-    };
-    
-    // Générer le contenu MDX
-    const content = generateMDXContent(postData);
+    let filePath, fileName, slug, content;
+
+    if (isSeriesArticle) {
+      // Article de série
+      const seriesPath = path.join(postsDirectory, category, seriesData.id);
+      
+      // Créer le dossier de la série si c'est une nouvelle série
+      if (seriesData.isNew) {
+        if (!fs.existsSync(seriesPath)) {
+          fs.mkdirSync(seriesPath, { recursive: true });
+        }
+        createSeriesMetadata(seriesPath, seriesData.title, seriesData.color, seriesData.totalExpected);
+        console.log(`✅ Série "${seriesData.title}" créée !`);
+      }
+      
+      // Obtenir le prochain numéro de partie
+      const partNumber = getNextPartNumber(seriesPath);
+      const paddedPart = partNumber.toString().padStart(2, '0');
+      const articleSlug = generateSlug(title);
+      fileName = `${paddedPart}-${articleSlug}.mdx`;
+      filePath = path.join(seriesPath, fileName);
+      slug = articleSlug;
+      
+      const postData = {
+        title,
+        description,
+        category,
+        tags,
+        publishedAt,
+        featured,
+        image,
+        seriesTitle: seriesData.title
+      };
+      
+      content = generateSeriesMDXContent(postData);
+      
+      console.log(`📚 Article créé dans la série "${seriesData.title}" - Partie ${partNumber}`);
+      
+    } else {
+      // Article autonome (logique existante)
+      const categoryDir = getCategoryDirectory(category);
+      slug = generateSlug(title, publishedAt);
+      fileName = `${publishedAt}-${slug}.mdx`;
+      filePath = path.join(__dirname, `../content/blog/${categoryDir}/${fileName}`);
+      
+      const postData = {
+        title,
+        description,
+        category,
+        tags,
+        publishedAt,
+        featured,
+        image
+      };
+      
+      content = generateMDXContent(postData);
+    }
     
     // Créer le répertoire s'il n'existe pas
     const dirPath = path.dirname(filePath);
@@ -142,6 +360,13 @@ async function createPost() {
     console.log(`🏷️  Tags : ${tags.join(', ')}`);
     console.log(`⭐ Vedette : ${featured ? 'Oui' : 'Non'}`);
     console.log(`📅 Publié le : ${publishedAt}`);
+    
+    if (isSeriesArticle) {
+      console.log(`📚 Série : ${seriesData.title}`);
+      if (seriesData.totalExpected) {
+        console.log(`📊 Progression : ${getNextPartNumber(path.join(postsDirectory, category, seriesData.id)) - 1}/${seriesData.totalExpected} parties`);
+      }
+    }
     
     console.log('\\n📝 Instructions pour compléter l\'article :');
     console.log('1. Ouvrez le fichier généré');

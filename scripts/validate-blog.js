@@ -5,14 +5,26 @@ console.log('🔍 Validation des articles du blog...\n');
 
 try {
   const postsDirectory = path.join(process.cwd(), 'src/content/blog');
-  const fileNames = fs.readdirSync(postsDirectory, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .flatMap(dirent => {
-      const categoryDir = path.join(postsDirectory, dirent.name);
-      return fs.readdirSync(categoryDir)
-        .filter(fileName => fileName.endsWith('.mdx'))
-        .map(fileName => path.join(dirent.name, fileName));
+  
+  function getAllMdxFiles(dir) {
+    const files = [];
+    const items = fs.readdirSync(dir, { withFileTypes: true });
+    
+    items.forEach(item => {
+      const fullPath = path.join(dir, item.name);
+      if (item.isDirectory()) {
+        files.push(...getAllMdxFiles(fullPath));
+      } else if (item.name.endsWith('.mdx') && item.name !== 'SERIES.md') {
+        // Exclure SERIES.md et ne garder que les .mdx
+        const relativePath = path.relative(postsDirectory, fullPath);
+        files.push(relativePath);
+      }
     });
+    
+    return files;
+  }
+  
+  const fileNames = getAllMdxFiles(postsDirectory);
 
   if (fileNames.length === 0) {
     console.log('❌ Aucun article trouvé');
@@ -30,6 +42,10 @@ try {
     
     console.log(`--- Article ${index + 1} ---`);
     console.log(`Fichier: ${filePath}`);
+    
+    // Déterminer si c'est un article de série
+    const pathParts = filePath.split(path.sep);
+    const isSeriesArticle = pathParts.length > 1; // category/series/fichier.mdx
     
     // Validation de base - chercher dans le frontmatter
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
@@ -71,6 +87,11 @@ try {
       console.log(`  Catégorie: ${category}`);
       console.log(`  Date: ${date}`);
       console.log(`  Auteur: ${author}`);
+      if (isSeriesArticle) {
+        console.log(`  Type: 📚 Article de série`);
+      } else {
+        console.log(`  Type: 📄 Article autonome`);
+      }
     }
     console.log('');
   });
