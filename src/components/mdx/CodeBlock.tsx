@@ -8,13 +8,15 @@ interface CodeBlockProps {
   className?: string;
   title?: string;
   'data-language'?: string;
+  language?: string;
 }
 
 const CodeBlock = ({ 
   children, 
   className,
   title,
-  'data-language': dataLanguage
+  'data-language': dataLanguage,
+  language: explicitLanguage
 }: CodeBlockProps) => {
   const [copied, setCopied] = useState(false);
 
@@ -38,7 +40,7 @@ const CodeBlock = ({
   }, []);
 
   const codeText = getCodeText(children);
-  const language = dataLanguage || '';
+  const language = explicitLanguage || dataLanguage || '';
 
   // Copy function
   const copyToClipboard = useCallback(async () => {

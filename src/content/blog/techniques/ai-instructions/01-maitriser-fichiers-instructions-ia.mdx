@@ -1,0 +1,118 @@
+---
+title: "Maîtriser les fichiers d'instructions IA : Guide complet (claude.md, gemini.md, agent.md)"
+description: "Transformez vos agents IA en véritables partenaires experts grâce aux fichiers d'instructions personnalisées. Guide complet pour structurer vos fichiers claude.md, gemini.md et agent.md."
+category: "techniques"
+tags: ["AI", "LLM", "DX", "Productivity", "Best Practices"]
+publishedAt: "2026-02-23"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/ai-instructions.svg"
+---
+
+# Maîtriser les fichiers d'instructions IA : Guide complet (claude.md, gemini.md, agent.md)
+
+L'essor des agents IA (comme Cursor, Claude Desktop, Gemini CLI) a radicalement changé notre façon de coder. Cependant, pour qu'un agent soit réellement efficace, il doit comprendre votre contexte, vos standards de code et vos préférences de communication.
+
+C'est là qu'interviennent les fichiers d'instructions personnalisées comme `claude.md`, `gemini.md`, `agent.md` ou encore `.cursorrules`.
+
+## 🎯 Pourquoi les instructions personnalisées sont indispensables ?
+
+Un agent IA standard possède des connaissances générales. Sans instructions spécifiques, il peut :
+- Utiliser des bibliothèques obsolètes.
+- Proposer des structures de dossiers incohérentes avec votre projet.
+- Ignorer vos conventions de nommage (PascalCase vs camelCase).
+- Manquer de contexte sur l'architecture globale.
+
+En fournissant un fichier d'instructions, vous **"formatez"** l'agent pour qu'il devienne un expert dédié à votre projet spécifique.
+
+<Callout type="tip">
+💡 Un bon fichier d'instructions réduit les allers-retours de 50% en éliminant les corrections liées au style ou au contexte.
+</Callout>
+
+## 🏗️ L'écosystème des fichiers d'instructions
+
+Chaque outil a ses propres conventions pour charger ces instructions :
+
+- **`.cursorrules`** : Spécifique à l'éditeur **Cursor**. Placé à la racine du projet, il guide le modèle dans ses suggestions de code.
+- **`claude.md`** : Souvent utilisé avec **Claude Desktop** ou des agents basés sur Claude (comme Cliner / Roo Code).
+- **`gemini.md`** : Utilisé par des agents intégrant les modèles **Google Gemini**.
+- **`agent.md`** : Un standard émergent pour les agents CLI universels comme **Gemini CLI**.
+
+## 🏗️ Anatomie d'un fichier d'instructions efficace
+
+Un fichier d'instructions robuste doit être structuré de manière claire. Voici les sections essentielles :
+
+### 1. Identité & Rôle
+Définissez qui est l'agent.
+> "Tu es un ingénieur Senior Fullstack expert en React et Next.js. Ta mission est de maintenir une base de code propre, performante et typée avec TypeScript."
+
+### 2. Stack Technique
+Précisez les technologies et versions pour éviter les hallucinations.
+<TechStack 
+  technologies={[
+    { name: "Next.js 15 (App Router)", color: "#000000" },
+    { name: "TypeScript 5.x", color: "#3178C6" },
+    { name: "Tailwind CSS", color: "#06B6D4" },
+    { name: "Lucide Icons", color: "#F59E0B" }
+  ]}
+/>
+
+### 3. Conventions & Standards
+C'est ici que vous définissez le "comment".
+- **Nommage** : "Utilise le kebab-case pour les fichiers, PascalCase pour les composants."
+- **Gestion d'erreurs** : "Utilise toujours des blocs try/catch et journalise les erreurs avec notre service interne."
+- **Testing** : "Écris des tests Vitest pour chaque nouvelle fonctionnalité."
+
+### 4. Workflow & Communication
+Comment l'IA doit-elle interagir avec vous ?
+- "Explique brièvement ta stratégie avant d'appliquer des changements."
+- "Si une tâche est complexe, décompose-la en étapes validables."
+
+---
+
+## 🚀 Exemple concret : Template réutilisable
+
+Voici un exemple de ce à quoi pourrait ressembler votre fichier `agent.md` ou `claude.md` :
+
+```markdown
+# Project Context: Portfolio 2026
+You are an expert AI developer assistant specialized in Next.js and Tailwind.
+
+## Tech Stack
+- Framework: Next.js 15 (App Router)
+- Language: TypeScript (Strict mode)
+- Styling: Vanilla CSS / Tailwind for utilities
+- UI: React Server Components by default
+
+## Coding Guidelines
+- Follow SOLID principles.
+- Use functional components and hooks (no class components).
+- Ensure 100% accessibility (A11y) for all UI components.
+- Keep components atomic and reusable.
+
+## Communication
+- Be concise and technical.
+- Propose refactoring if you see technical debt.
+- Always verify your changes with existing tests.
+```
+
+## 🛠️ Mise en œuvre par outil
+
+### Pour Cursor (`.cursorrules`)
+Créez un fichier `.cursorrules` à la racine de votre projet. Cursor le chargera automatiquement pour chaque session de chat ou d'édition (Composer).
+
+### Pour Gemini CLI (`agent.md` / `gemini.md`)
+Certains agents CLI recherchent activement ces fichiers dans le répertoire courant. Vérifiez la documentation de votre outil pour connaître le nom exact attendu.
+
+### Pour Claude Desktop (Instructions Personnalisées)
+Vous pouvez copier-coller le contenu de votre fichier dans les "Custom Instructions" de l'interface web ou via l'API.
+
+## 🌈 Conclusion
+
+Investir 30 minutes dans la rédaction d'un fichier `agent.md` ou `.cursorrules` est l'un des meilleurs gains de productivité que vous puissiez faire en 2026. Cela transforme une IA générique en un partenaire qui connaît votre projet aussi bien que vous, garantissant une cohérence et une qualité de code irréprochable.
+
+**Mon conseil :** Faites évoluer ce fichier au fil du projet. Si l'IA fait une erreur répétitive, ajoutez une règle pour l'éviter la prochaine fois !
+
+---
+
+*Vous souhaitez aller plus loin dans l'optimisation de vos workflows ? Consultez mes autres articles sur le développement assisté par IA !*

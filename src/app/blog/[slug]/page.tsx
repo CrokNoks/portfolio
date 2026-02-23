@@ -164,6 +164,7 @@ export default async function ArticlePage({ params }: PageProps) {
                   options={mdxOptions}
                   components={{
                     pre: CodeBlock,
+                    CodeBlock,
                     Callout,
                     TechStack,
                   }}

@@ -1,0 +1,91 @@
+---
+title: "Étendre les capacités de votre IA : Guide de création de Skills"
+description: "Apprenez à créer des Skills sur-mesure pour vos agents IA. Guide complet pour structurer vos expertises et automatiser vos workflows complexes."
+category: "techniques"
+tags: ["AI", "Agents", "Skills", "Automation", "Workflow"]
+publishedAt: "2026-02-23"
+featured: false
+author: "Lucas GUERRIER"
+image: "/blog/ai-skills.svg"
+---
+
+# Étendre les capacités de votre IA : Guide de création de Skills
+
+Dans le premier article de cette série, nous avons vu comment les fichiers `claude.md` ou `gemini.md` permettent de donner du contexte à une IA. Mais pour aller plus loin et automatiser des tâches complexes de bout en bout, nous avons besoin de **Skills**.
+
+Un **Skill** est un module d'expertise encapsulé qui définit non seulement des instructions, mais aussi les outils et les workflows spécifiques à une mission donnée.
+
+## 🧱 Qu'est-ce qu'un Skill ?
+
+Imaginez que vous vouliez que votre IA soit experte en audit de performance Web. Au lieu de lui donner des instructions générales dans chaque projet, vous créez un Skill "Performance-Audit". 
+
+Ce Skill contient :
+1.  **Une identité experte** : "Tu es un ingénieur performance Web senior."
+2.  **Un workflow précis** : "1. Analyse le bundle, 2. Vérifie les polices, 3. Audite les images."
+3.  **Des contraintes de sécurité** : "Ne modifie jamais le fichier `package.json` sans autorisation."
+4.  **Des outils autorisés** : L'accès au shell pour lancer Lighthouse par exemple.
+
+<Callout type="info">
+ℹ️ Un Skill transforme l'IA d'un assistant généraliste en un agent spécialisé capable d'exécuter des protocoles métier rigoureux.
+</Callout>
+
+## 🏗️ L'anatomie d'un fichier `SKILL.md`
+
+Un Skill se définit généralement par un fichier Markdown structuré avec un frontmatter YAML.
+
+```markdown
+---
+name: web-performance-expert
+description: Audite et optimise la performance d'une application Next.js.
+allowed-tools: ["Bash", "FileRead", "FileEdit"]
+---
+
+# Web Performance Expert Skill
+
+## Mission
+Ton rôle est d'identifier les goulots d'étranglement de performance et de proposer des solutions concrètes.
+
+## Workflow Typique
+1. Exécute `npm run build` pour analyser la taille des chunks.
+2. Examine `next.config.ts` pour vérifier les optimisations d'images.
+3. Propose des imports dynamiques pour les composants lourds.
+
+## Règles d'Or
+- Priorise toujours le LCP (Largest Contentful Paint).
+- N'installe jamais de nouvelles dépendances sans demander.
+```
+
+## 🚀 Pourquoi créer vos propres Skills ?
+
+### 1. Reproductibilité
+Une fois qu'un workflow est "codé" dans un Skill, l'IA l'exécutera de la même manière à chaque fois, quel que soit le projet. Vous évitez les oublis ou les erreurs de manipulation.
+
+### 2. Isolation des Responsabilités
+En séparant les compétences (un skill pour le SEO, un pour la Sécurité, un pour le Refactoring), vous gardez des instructions courtes et percutantes. L'IA n'est pas "noyée" sous 500 lignes de règles contradictoires.
+
+### 3. Partage d'Expertise
+Les Skills peuvent être partagés au sein d'une équipe. Un développeur senior peut rédiger un Skill "Code-Reviewer" qui sera utilisé par toute l'équipe via leur agent IA local.
+
+## 🛠️ Comment implémenter un nouveau Skill ?
+
+### Étape 1 : Identifier le pattern
+Observez les tâches que vous demandez souvent à l'IA. Si vous dites souvent "Vérifie que j'ai bien mis les alt sur mes images et que j'utilise `next/image`", c'est un excellent candidat pour un Skill.
+
+### Étape 2 : Définir le protocole
+Ne vous contentez pas de dire "fais du SEO". Décrivez les étapes :
+- "Cherche les fichiers `.tsx` dans `src/app`."
+- "Vérifie la présence de la balise `Metadata`."
+- "Alerte si le titre dépasse 60 caractères."
+
+### Étape 3 : Spécifier les outils
+Un Skill doit savoir ce qu'il a le droit de faire. Doit-il pouvoir lire des fichiers ? En écrire ? Exécuter des scripts npm ? Soyez précis pour garantir la sécurité de votre environnement.
+
+## 🌈 Conclusion
+
+Les Skills sont la clé pour passer d'une IA "gadget" à une IA "collaboratrice". En structurant vos processus métier sous forme de modules activables, vous construisez une plateforme d'automatisation intelligente qui grandit avec votre expertise.
+
+**Dans le prochain article, nous verrons comment orchestrer plusieurs agents spécialisés pour mener à bien un projet complexe de A à Z.**
+
+---
+
+*Prêt à coder votre premier Skill ? Commencez par une tâche simple et voyez la magie opérer !*
