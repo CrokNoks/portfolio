@@ -1,0 +1,226 @@
+---
+title: "React-Admin : Créer ses propres Composants Field et Input"
+description: "Débloquez une personnalisation illimitée en apprenant à créer vos propres composants Field et Input dans React-Admin pour un affichage et une saisie de données sur mesure."
+category: "techniques"
+tags: ["React", "React-Admin", "Custom Components", "Fields", "Inputs", "useInput"]
+publishedAt: "2025-02-21"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/react-admin-custom-components.svg"
+series: "react-admin-mastery"
+episode: 7
+---
+
+# React-Admin : Créer ses propres Composants Field et Input
+
+React-Admin fournit une large gamme de composants `<TextField>`, `<NumberInput>`, `<DateField>`, etc. Mais que faire lorsque vos données ne correspondent à aucun de ces formats ? Ou lorsque vous voulez une expérience de saisie vraiment unique ?
+
+La réponse est de créer vos propres composants. C'est l'une des fonctionnalités les plus puissantes de React-Admin, vous permettant d'adapter l'interface précisément à votre modèle de données.
+
+Dans cet article, nous allons apprendre à :
+1.  **Créer un composant `Field` personnalisé** pour un affichage sur mesure.
+2.  **Construire un composant `Input` personnalisé** pour une saisie de données unique, grâce au hook `useInput`.
+
+<TechStack 
+  technologies={[
+    { name: "React-Admin", color: "#ff6358" },
+    { name: "TypeScript", color: "#3178c6" },
+    { name: "React Hook Form", color: "#EC5990" }
+  ]}
+/>
+
+## 🎨 Partie 1 : Créer un Composant `Field` Personnalisé
+
+Un composant `Field` a une mission simple : recevoir un `record` (l'objet de données actuel) et une `source` (la clé de la donnée à afficher), puis afficher cette donnée. Le moyen le plus simple d'accéder au `record` est le hook `useRecordContext`.
+
+### Exemple 1 : `ColoredStatusField`
+
+Imaginons que nous avons un champ `status` qui peut être `'pending'`, `'approved'`, ou `'rejected'`. Nous voulons afficher une pastille de couleur différente pour chaque statut.
+
+```tsx
+// src/fields/ColoredStatusField.tsx
+import * as React from 'react';
+import { useRecordContext } from 'react-admin';
+import { Chip } from '@mui/material';
+
+const ColoredStatusField = ({ source }: { source: string }) => {
+    const record = useRecordContext();
+    if (!record) return null;
+
+    const status = record[source];
+    let color: 'default' | 'success' | 'error' = 'default';
+    if (status === 'approved') color = 'success';
+    if (status === 'rejected') color = 'error';
+
+    return <Chip label={status} color={color} />;
+};
+
+export default ColoredStatusField;
+```
+
+**Utilisation :**
+```jsx
+// Dans une List ou une Show view
+import ColoredStatusField from '../fields/ColoredStatusField';
+
+<Datagrid>
+    <TextField source="id" />
+    <TextField source="title" />
+    <ColoredStatusField source="status" />
+</Datagrid>
+```
+
+### Exemple 2 : `StarRatingField`
+
+Affichons une note numérique sous forme d'étoiles.
+
+```tsx
+// src/fields/StarRatingField.tsx
+import * as React from 'react';
+import { useRecordContext } from 'react-admin';
+import { Box } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+
+const StarRatingField = ({ source, max = 5 }: { source: string, max?: number }) => {
+    const record = useRecordContext();
+    if (!record) return null;
+
+    const rating = record[source];
+    return (
+        <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
+            {Array.from({ length: max }, (_, i) => 
+                i < rating ? <StarIcon key={i} /> : <StarBorderIcon key={i} />
+            )}
+        </Box>
+    );
+};
+
+export default StarRatingField;
+```
+
+<Callout type="info">
+Le hook `useRecordContext` est votre meilleur ami pour les `Field` personnalisés. Il récupère le `record` fourni par le composant parent (`<Datagrid>`, `<SimpleShowLayout>`, etc.) sans avoir besoin de "prop drilling".
+</Callout>
+
+## 🛠️ Partie 2 : Créer un Composant `Input` Personnalisé
+
+Les `Input` sont plus complexes car ils doivent s'intégrer à l'état du formulaire, gérer la validation et afficher les erreurs. Heureusement, React-Admin nous fournit le hook `useInput` qui fait presque tout le travail.
+
+### Le Hook `useInput` : Le Cerveau de votre Input
+
+Le hook `useInput` est un pont vers `react-hook-form` (utilisé en interne par React-Admin). Il vous donne tout ce dont vous avez besoin :
+
+-   `field`: Un objet avec `name`, `value`, `onChange`, `onBlur`. À connecter à votre élément de saisie (ex: `<input>`).
+-   `fieldState`: Un objet avec `error`, `invalid`, `isTouched`, `isDirty`. Pour afficher les erreurs et autres états.
+-   `id`: Un `id` unique à lier à votre input et son label pour l'accessibilité.
+
+### Exemple 1 : Un `ColorPickerInput` simple
+
+Créons un input pour choisir une couleur en utilisant un `<input type="color">` HTML5.
+
+```tsx
+// src/inputs/ColorPickerInput.tsx
+import * as React from 'react';
+import { useInput, Labeled } from 'react-admin';
+import { Box, TextField, Typography } from '@mui/material';
+
+export const ColorPickerInput = (props: any) => {
+    const {
+        field,
+        fieldState: { error, invalid, isTouched },
+        id,
+    } = useInput(props);
+
+    return (
+        <Labeled label={props.label} id={id}>
+            <Box display="flex" alignItems="center" gap={2}>
+                <input
+                    id={id}
+                    type="color"
+                    {...field}
+                    style={{ width: 40, height: 40, border: 'none', background: 'none' }}
+                />
+                <Typography>{field.value}</Typography>
+                {isTouched && invalid && <Typography color="error">{error?.message}</Typography>}
+            </Box>
+        </Labeled>
+    );
+};
+```
+Le composant `<Labeled>` de React-Admin est un utilitaire pratique pour ajouter un label et gérer les marges correctement.
+
+### Exemple 2 : Un `LocationInput` complexe
+
+Créons un `Input` qui gère un objet de localisation (`{ lat: number, lng: number }`) avec deux champs de texte. Cela montre comment `useInput` peut gérer des valeurs non-primitives.
+
+```tsx
+// src/inputs/LocationInput.tsx
+import * as React from 'react';
+import { useInput, Labeled, InputProps } from 'react-admin';
+import { Box, TextField, Typography } from '@mui/material';
+
+type Location = { lat: number; lng: number };
+
+export const LocationInput = (props: InputProps<Location>) => {
+    const {
+        field,
+        fieldState: { error, invalid, isTouched },
+        id,
+    } = useInput<Location>(props);
+
+    const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newLat = parseFloat(event.target.value);
+        field.onChange({ ...field.value, lat: newLat });
+    };
+    
+    const handleLngChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newLng = parseFloat(event.target.value);
+        field.onChange({ ...field.value, lng: newLng });
+    };
+
+    return (
+        <Labeled label={props.label} id={id}>
+            <Box display="flex" gap={2}>
+                <TextField
+                    label="Latitude"
+                    variant="filled"
+                    type="number"
+                    value={field.value?.lat || ''}
+                    onChange={handleLatChange}
+                    onBlur={field.onBlur}
+                    error={isTouched && invalid}
+                />
+                <TextField
+                    label="Longitude"
+                    variant="filled"
+                    type="number"
+                    value={field.value?.lng || ''}
+                    onChange={handleLngChange}
+                    onBlur={field.onBlur}
+                    error={isTouched && invalid}
+                />
+                {isTouched && invalid && <Typography color="error">{error?.message}</Typography>}
+            </Box>
+        </Labeled>
+    );
+};
+```
+<Callout type="warning">
+**Important** : Le hook `useInput` gère des objets complexes sans problème. Il suffit de s'assurer que la fonction `onChange` est appelée avec la nouvelle valeur complète de l'objet.
+</Callout>
+
+## ✅ Intégration et Bonnes Pratiques
+
+-   **Passez les `props`** : N'oubliez pas de passer `...props` à `useInput` pour qu'il puisse recevoir la `source`, les validateurs (`validate={required()}`), la `defaultValue`, etc.
+-   **Utilisez `<Labeled>`** : Ce composant simplifie grandement l'alignement et l'accessibilité de votre `Input` personnalisé.
+-   **Pensez à la Validation** : `useInput` gère automatiquement les validateurs que vous lui passez. Affichez simplement `error.message` quand `invalid` est `true`.
+
+## ✨ Conclusion
+
+La création de vos propres composants `Field` et `Input` est la clé pour faire passer votre application React-Admin d'une interface d'administration générique à une expérience utilisateur parfaitement adaptée à votre métier.
+
+-   Pour un affichage personnalisé, le hook **`useRecordContext`** est tout ce dont vous avez besoin pour créer un `Field`.
+-   Pour une saisie sur mesure, le hook **`useInput`** est le pont magique qui connecte votre composant à la logique de formulaire de React-Admin.
+
+N'hésitez plus à créer des composants qui présentent et capturent vos données de la manière la plus intuitive possible. C'est ce niveau de personnalisation qui fait de React-Admin un framework si productif et agréable à utiliser.

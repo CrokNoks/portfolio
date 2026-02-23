@@ -1,0 +1,323 @@
+---
+title: "React-Admin : L'Authentification en Pratique (JWT, OAuth, Rôles)"
+description: "Un guide complet pour sécuriser votre application React-Admin : implémentez l'authentification JWT, le login social OAuth, et gérez les permissions par rôle."
+category: "techniques"
+tags: ["React", "React-Admin", "Authentication", "JWT", "OAuth", "Security"]
+publishedAt: "2025-02-17"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/react-admin-auth.svg"
+series: "react-admin-mastery"
+episode: 4
+---
+
+# React-Admin : L'Authentification en Pratique (JWT, OAuth, Rôles)
+
+Sécuriser une interface d'administration n'est pas une option, c'est une nécessité. React-admin nous simplifie grandement la tâche grâce à un système d'authentification flexible et puissant : le `authProvider`.
+
+Dans cet article, nous allons explorer en profondeur comment implémenter des stratégies d'authentification modernes et robustes :
+1.  **Authentification par Token JWT** : La méthode la plus courante pour les API REST.
+2.  **Login Social via OAuth** : Permettre aux utilisateurs de se connecter avec leur compte Google ou GitHub.
+3.  **Gestion des Rôles et Permissions** : Contrôler qui peut voir quoi et qui peut faire quoi dans votre application.
+
+<TechStack 
+  technologies={[
+    { name: "React-Admin", color: "#ff6358" },
+    { name: "JWT", color: "#000000" },
+    { name: "OAuth 2.0", color: "#24292e" },
+    { name: "TypeScript", color: "#3178c6" }
+  ]}
+/>
+
+## 🎯 Le `authProvider` : Le Gardien de votre Application
+
+Le `authProvider` est un objet qui expose une interface simple pour brancher votre logique d'authentification à React-Admin. Il suffit de le passer au composant `<Admin>`.
+
+Voici les méthodes essentielles que vous devrez implémenter :
+
+```typescript
+// src/authProvider.ts
+import { AuthProvider } from 'react-admin';
+
+export const authProvider: AuthProvider = {
+    // Méthode appelée sur la page de login
+    login: ({ username, password }) =>  Promise.resolve(),
+    
+    // Méthode appelée pour déconnecter l'utilisateur
+    logout: () => Promise.resolve(),
+
+    // Méthode appelée à chaque changement de page pour vérifier les erreurs (ex: 401)
+    checkError: ({ status }) => Promise.resolve(),
+
+    // Méthode appelée à chaque navigation pour vérifier que l'utilisateur est bien connecté
+    checkAuth: () => Promise.resolve(),
+
+    // Méthode pour récupérer les permissions de l'utilisateur
+    getPermissions: () => Promise.resolve(),
+
+    // Méthode pour récupérer l'identité de l'utilisateur (id, nom, avatar)
+    getIdentity: () => Promise.resolve(),
+};
+```
+
+<Callout type="info">
+Chaque méthode retourne une `Promise`. Vous devez retourner `Promise.resolve()` en cas de succès et `Promise.reject()` en cas d'échec pour que React-Admin puisse réagir en conséquence (par exemple, rediriger vers la page de login).
+</Callout>
+
+## 🔐 Partie 1 : Authentification par Token JWT
+
+C'est le scénario le plus classique. L'utilisateur fournit un email/mot de passe, le backend retourne un JSON Web Token (JWT) si les identifiants sont corrects. Ce token sera ensuite envoyé à chaque requête pour prouver l'identité de l'utilisateur.
+
+### 1. Le Processus de Login
+
+```typescript
+// src/authProvider.ts
+export const authProvider: AuthProvider = {
+    login: async ({ username, password }) => {
+        const request = new Request('https://myapi.com/authenticate', {
+            method: 'POST',
+            body: JSON.stringify({ email: username, password }),
+            headers: new Headers({ 'Content-Type': 'application/json' }),
+        });
+        try {
+            const response = await fetch(request);
+            if (response.status < 200 || response.status >= 300) {
+                throw new Error(response.statusText);
+            }
+            const { token } = await response.json();
+            // On stocke le token dans le localStorage
+            localStorage.setItem('token', token);
+            return Promise.resolve();
+        } catch {
+            throw new Error('Email ou mot de passe incorrect');
+        }
+    },
+    // ... autres méthodes
+};
+```
+
+### 2. Vérifier l'Authentification (`checkAuth`)
+
+Cette méthode est appelée à chaque fois que l'utilisateur navigue dans l'application. C'est ici qu'on vérifie la présence du token.
+
+```typescript
+// src/authProvider.ts
+// ...
+    checkAuth: () => {
+        return localStorage.getItem('token')
+            ? Promise.resolve()
+            : Promise.reject();
+    },
+// ...
+```
+Si la `Promise` est rejetée, React-Admin redirigera automatiquement l'utilisateur vers la page de login.
+
+### 3. Déconnexion (`logout`)
+
+Pour déconnecter l'utilisateur, il suffit de supprimer le token.
+
+```typescript
+// src/authProvider.ts
+// ...
+    logout: () => {
+        localStorage.removeItem('token');
+        return Promise.resolve();
+    },
+// ...
+```
+
+### 4. Envoyer le Token à l'API
+
+Votre `dataProvider` doit être modifié pour inclure le token dans les en-têtes de chaque requête.
+
+```typescript
+// src/dataProvider.ts
+import { fetchUtils } from 'react-admin';
+import simpleRestProvider from 'ra-data-simple-rest';
+
+const httpClient = (url, options = {}) => {
+    if (!options.headers) {
+        options.headers = new Headers({ Accept: 'application/json' });
+    }
+    const token = localStorage.getItem('token');
+    options.headers.set('Authorization', `Bearer ${token}`);
+    return fetchUtils.fetchJson(url, options);
+};
+
+export const dataProvider = simpleRestProvider('https://myapi.com', httpClient);
+```
+
+<Callout type="warning">
+**Attention** : Le `dataProvider` n'a pas accès au `authProvider`. Il faut donc accéder directement au `localStorage` pour récupérer le token. Assurez-vous d'être cohérent dans la manière dont vous stockez et récupérez le token.
+</Callout>
+
+## 🌐 Partie 2 : Login Social avec OAuth
+
+Permettre à vos utilisateurs de se connecter via des services tiers comme Google ou GitHub améliore considérablement l'expérience. Le flux OAuth est plus complexe, mais le `authProvider` reste notre point d'entrée.
+
+Ici, nous n'aurons pas de page de login classique. Nous aurons une page avec un simple bouton "Se connecter avec GitHub".
+
+### 1. Un `login` différent
+
+La méthode `login` ne sera pas appelée avec un email/password. En fait, nous n'en aurons pas besoin. Le processus de connexion sera initié par un composant personnalisé.
+
+### 2. Page de Login Personnalisée
+
+```jsx
+// src/MyLoginPage.tsx
+import * as React from 'react';
+import { Button } from '@mui/material';
+import { useLogin, useNotify } from 'react-admin';
+
+const MyLoginPage = () => {
+    const login = useLogin();
+    const notify = useNotify();
+
+    const handleLogin = () => {
+        // L'URL de votre backend qui initie le flux OAuth
+        const oauthRedirectUrl = 'https://myapi.com/auth/github';
+        
+        // On redirige l'utilisateur vers GitHub
+        window.location.href = oauthRedirectUrl;
+    };
+
+    return (
+        <div>
+            <h1>Connexion</h1>
+            <Button variant="contained" onClick={handleLogin}>
+                Se connecter avec GitHub
+            </Button>
+        </div>
+    );
+};
+
+export default MyLoginPage;
+```
+Et on l'utilise dans `<Admin>`:
+```jsx
+// src/App.tsx
+import { Admin } from 'react-admin';
+import MyLoginPage from './MyLoginPage';
+
+const App = () => (
+    <Admin loginPage={MyLoginPage} /* ... */>
+        {/* ... */}
+    </Admin>
+);
+```
+
+### 3. Gérer le Callback
+
+Après que l'utilisateur a autorisé l'application sur GitHub, il sera redirigé vers une URL de callback de votre application (ex: `https://myapp.com/auth-callback`). C'est sur cette page que la magie opère.
+
+```jsx
+// src/AuthCallback.tsx
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useNotify } from 'react-admin';
+
+const AuthCallback = () => {
+    const location = useLocation();
+    const notify = useNotify();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token'); // Supposons que votre backend renvoie le token en paramètre
+
+        if (token) {
+            localStorage.setItem('token', token);
+            // Redirige vers la page d'accueil de l'admin
+            window.location.replace('/'); 
+        } else {
+            notify("Erreur d'authentification", { type: 'error' });
+            window.location.replace('/login');
+        }
+    }, [location, notify]);
+
+    return <div>Authentification en cours...</div>;
+};
+
+export default AuthCallback;
+```
+Vous devez ajouter une route pour cette page dans votre `App.tsx` en utilisant le prop `customRoutes`.
+
+## 🛡️ Partie 3 : Gestion des Rôles et Permissions
+
+Savoir *qui* est connecté est bien, mais savoir *ce qu'il a le droit de faire* est mieux.
+
+### 1. `getPermissions`
+
+Cette méthode est cruciale. Elle est appelée une fois après le login et le résultat est mis en cache. Elle doit retourner les permissions de l'utilisateur (un rôle, un tableau d'actions, etc.).
+
+```typescript
+// src/authProvider.ts
+import { jwtDecode } from "jwt-decode";
+
+// ...
+    getPermissions: () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            return Promise.reject();
+        }
+        // Supposons que le rôle est encodé dans le token JWT
+        const decodedToken: { role: string } = jwtDecode(token);
+        const role = decodedToken.role;
+        return Promise.resolve(role); // ex: 'admin', 'moderator', 'user'
+    },
+// ...
+```
+
+### 2. Utiliser les Permissions dans l'UI
+
+React-Admin fournit le hook `usePermissions` pour accéder aux permissions partout dans votre application.
+
+**Exemple : Un bouton "Supprimer" réservé aux admins.**
+
+```jsx
+// Dans une Edit view
+import { DeleteButton, usePermissions } from 'react-admin';
+
+const MyToolbar = props => {
+    const { permissions } = usePermissions();
+    return (
+        <Toolbar {...props}>
+            <SaveButton />
+            {permissions === 'admin' && <DeleteButton />}
+        </Toolbar>
+    );
+};
+```
+
+**Exemple : Une ressource visible uniquement par les admins.**
+
+Vous pouvez passer une fonction en tant que `children` de `<Admin>` pour filtrer vos ressources.
+
+```jsx
+// src/App.tsx
+import { Admin, Resource, usePermissions } from 'react-admin';
+
+const App = () => (
+    <Admin authProvider={authProvider} dataProvider={dataProvider}>
+        {permissions => (
+            <>
+                <Resource name="posts" /* ... */ />
+                <Resource name="comments" /* ... */ />
+                {permissions === 'admin' && (
+                    <Resource name="users" /* ... */ />
+                )}
+            </>
+        )}
+    </Admin>
+);
+```
+
+## ✨ Conclusion
+
+Le `authProvider` de React-Admin est une interface incroyablement puissante et flexible qui permet de s'adapter à presque tous les systèmes d'authentification.
+
+En maîtrisant ses différentes méthodes, vous pouvez :
+- Implémenter une authentification **JWT classique** en quelques minutes.
+- Intégrer des **logins sociaux (OAuth)** pour une meilleure expérience utilisateur.
+- Mettre en place une **gestion des permissions basée sur les rôles** pour sécuriser finement votre application.
+
+La sécurité n'est plus un obstacle, mais une fonctionnalité que vous pouvez modeler à votre guise pour construire des applications d'administration robustes et professionnelles.

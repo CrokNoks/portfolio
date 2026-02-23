@@ -1,0 +1,311 @@
+---
+title: "React-Admin : Le DataProvider sur-mesure (API custom, GraphQL)"
+description: "Apprenez à créer et adapter votre DataProvider React-Admin pour interagir avec des APIs REST non-standard ou des services GraphQL complexes."
+category: "techniques"
+tags: ["React", "React-Admin", "DataProvider", "API", "REST", "GraphQL", "Custom"]
+publishedAt: "2025-02-18"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/react-admin-data-provider.svg"
+series: "react-admin-mastery"
+episode: 5
+---
+
+# React-Admin : Le DataProvider sur-mesure (API custom, GraphQL)
+
+Le `dataProvider` est le cœur de l'interaction entre votre application React-Admin et votre backend. C'est lui qui traduit les requêtes de l'interface d'administration (lister, créer, modifier, supprimer) en requêtes API et vice-versa.
+
+Si les `dataProviders` existants (`ra-data-json-server`, `ra-data-simple-rest`) suffisent pour de nombreux cas, la réalité des projets implique souvent des APIs avec des conventions spécifiques ou l'utilisation de GraphQL. C'est là qu'un `dataProvider` sur-mesure devient indispensable.
+
+Dans cet article, nous allons voir comment :
+1.  Comprendre l'interface du `dataProvider`.
+2.  Construire un `dataProvider` personnalisé pour une **API REST non-standard**.
+3.  Développer un `dataProvider` pour un **service GraphQL**.
+
+<TechStack 
+  technologies={[
+    { name: "React-Admin", color: "#ff6358" },
+    { name: "TypeScript", color: "#3178c6" },
+    { name: "REST API", color: "#2E8B57" },
+    { name: "GraphQL", color: "#E10098" }
+  ]}
+/>
+
+## 🎯 L'Interface du `dataProvider` : Votre Contrat avec l'API
+
+Un `dataProvider` React-Admin doit implémenter une série de méthodes, chacune correspondant à un type d'opération CRUD ou de récupération de données. Chaque méthode doit retourner une `Promise`.
+
+```typescript
+// src/customDataProvider.ts
+import { DataProvider } from 'react-admin';
+import { fetchUtils } from 'react-admin';
+
+const apiUrl = 'https://my-custom-api.com';
+const httpClient = fetchUtils.fetchJson; // Ou un httpClient personnalisé pour l'auth JWT
+
+export const customDataProvider: DataProvider = {
+    getList: (resource, params) => { /* ... */ },
+    getOne: (resource, params) => { /* ... */ },
+    getMany: (resource, params) => { /* ... */ },
+    getManyReference: (resource, params) => { /* ... */ },
+    create: (resource, params) => { /* ... */ },
+    update: (resource, params) => { /* ... */ },
+    updateMany: (resource, params) => { /* ... */ },
+    delete: (resource, params) => { /* ... */ },
+    deleteMany: (resource, params) => { /* ... */ },
+};
+```
+
+Chacune de ces méthodes reçoit deux arguments :
+-   `resource`: Le nom de la ressource (`'posts'`, `'users'`, etc.).
+-   `params`: Un objet contenant les paramètres spécifiques à l'opération (filtres, pagination, données à créer/modifier, etc.).
+
+Et doit retourner un `Promise` d'un objet avec une structure spécifique (`{ data: [], total: 0 }` pour `getList`, `{ data: {} }` pour `getOne`, `create`, `update`, etc.).
+
+<Callout type="info">
+Pour une implémentation complète de chaque méthode et le format des retours attendus, consultez la <a href="https://marmelab.com/react-admin/DataProviders.html" target="_blank">documentation officielle du `dataProvider`</a>.
+</Callout>
+
+## 🚀 Partie 1 : DataProvider pour une API REST Non-Standard
+
+Imaginons une API REST dont les conventions de pagination et de tri diffèrent de `ra-data-simple-rest`.
+
+**Conventions de notre API non-standard :**
+-   **Pagination** : Utilise `_page` et `_pageSize` au lieu de `_start` et `_end` dans les paramètres de requête.
+-   **Tri** : Utilise `_sortField` et `_sortOrder` au lieu de `_sort` et `_order`.
+-   **Filtres** : Supporte des filtres imbriqués pour les relations (ex: `author.name=john`).
+-   **Réponse `getList`** : Retourne les données directement dans un tableau, avec le nombre total d'éléments dans un en-tête `X-Total-Count`.
+
+### 1. `getList` : Adapter Pagination et Tri
+
+```typescript
+// src/customRestDataProvider.ts
+import { DataProvider, fetchUtils } from 'react-admin';
+
+const apiUrl = 'https://my-non-standard-api.com';
+const httpClient = fetchUtils.fetchJson;
+
+const customRestDataProvider: DataProvider = {
+    getList: (resource, params) => {
+        const { page, perPage } = params.pagination;
+        const { field, order } = params.sort;
+        const query: any = {
+            _page: page,
+            _pageSize: perPage,
+            _sortField: field,
+            _sortOrder: order,
+            ...params.filter, // Les filtres de React-Admin
+        };
+        const url = `${apiUrl}/${resource}?${fetchUtils.serializeQuery(query)}`;
+
+        return httpClient(url).then(({ headers, json }) => ({
+            data: json,
+            total: parseInt(headers.get('X-Total-Count') || '0', 10),
+        }));
+    },
+    // ... autres méthodes
+};
+```
+
+### 2. `getOne`, `create`, `update`
+
+Ces méthodes sont généralement plus simples à adapter car elles interagissent avec une seule ressource.
+
+```typescript
+// src/customRestDataProvider.ts
+// ...
+    getOne: (resource, params) =>
+        httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
+            data: json,
+        })),
+
+    create: (resource, params) =>
+        httpClient(`${apiUrl}/${resource}`, {
+            method: 'POST',
+            body: JSON.stringify(params.data),
+        }).then(({ json }) => ({
+            data: { ...params.data, id: json.id }, // Assurez-vous que l'ID est retourné
+        })),
+
+    update: (resource, params) =>
+        httpClient(`${apiUrl}/${resource}/${params.id}`, {
+            method: 'PUT', // Ou PATCH selon votre API
+            body: JSON.stringify(params.data),
+        }).then(({ json }) => ({
+            data: json,
+        })),
+    // ...
+```
+
+<Callout type="warning">
+**Important** : Le `create` doit toujours retourner l'ID de la nouvelle ressource. Si votre API ne le renvoie pas directement, vous devrez le simuler ou le récupérer autrement.
+</Callout>
+
+### 3. Gestion des Erreurs
+
+Il est crucial de gérer les erreurs HTTP pour que React-Admin puisse afficher des messages pertinents.
+
+```typescript
+// src/customRestDataProvider.ts
+// ...
+const throwingHttpClient = (url, options = {}) => {
+    return httpClient(url, options).then(response => {
+        if (response.status < 200 || response.status >= 300) {
+            return Promise.reject(new fetchUtils.HttpError(
+                response.statusText,
+                response.status,
+                response.json
+            ));
+        }
+        return response;
+    });
+};
+
+// Utilisez throwingHttpClient au lieu de httpClient
+// ...
+```
+
+## 🚀 Partie 2 : DataProvider pour GraphQL
+
+GraphQL présente un paradigme différent des APIs REST. Au lieu de multiples endpoints, vous avez un seul endpoint et vous utilisez des requêtes (queries) et des mutations (mutations).
+
+React-Admin fournit le package `ra-data-graphql` qui intègre le support de GraphQL. Il est souvent suffisant, mais créer un `dataProvider` de zéro vous donne un contrôle total.
+
+### 1. Configuration du Client GraphQL
+
+Nous allons utiliser `Apollo Client` comme exemple, mais d'autres comme `Relay` ou `urql` fonctionnent aussi.
+
+```typescript
+// src/graphQLClient.ts
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+
+const client = new ApolloClient({
+    link: new HttpLink({ uri: 'https://my-graphql-api.com/graphql' }),
+    cache: new InMemoryCache(),
+});
+
+export default client;
+```
+
+### 2. `getList` : Récupérer des Collections
+
+Ici, nous devons construire une requête GraphQL qui inclut la pagination, le tri et les filtres.
+
+```typescript
+// src/customGraphQLDataProvider.ts
+import { DataProvider } from 'react-admin';
+import gql from 'graphql-tag'; // N'oubliez pas d'installer graphql-tag
+import client from './graphQLClient'; // Notre client Apollo
+
+const customGraphQLDataProvider: DataProvider = {
+    getList: async (resource, params) => {
+        const { page, perPage } = params.pagination;
+        const { field, order } = params.sort;
+        const filter = JSON.stringify(params.filter); // Convertir les filtres en chaîne
+
+        const query = gql`
+            query ${resource}List($page: Int, $perPage: Int, $sortField: String, $sortOrder: String, $filter: JSON) {
+                ${resource} (page: $page, perPage: $perPage, sortField: $sortField, sortOrder: $sortOrder, filter: $filter) {
+                    id
+                    // ... vos champs de ressource
+                }
+                ${resource}Count (filter: $filter)
+            }
+        `;
+
+        const { data } = await client.query({
+            query,
+            variables: { page, perPage, sortField: field, sortOrder: order, filter },
+        });
+
+        return {
+            data: data[resource],
+            total: data[`${resource}Count`],
+        };
+    },
+    // ...
+};
+```
+<Callout type="tip">
+**Bonne pratique** : GraphQL ne fournit pas toujours un `_count` pour les collections. Vous devrez peut-être ajouter un champ spécifique à votre schéma GraphQL (`resourceCount` dans l'exemple) pour la pagination totale.
+</Callout>
+
+### 3. `getOne` : Récupérer une Entité Unique
+
+```typescript
+// src/customGraphQLDataProvider.ts
+// ...
+    getOne: async (resource, params) => {
+        const query = gql`
+            query ${resource}GetOne($id: ID!) {
+                ${resource} (id: $id) {
+                    id
+                    // ... vos champs de ressource
+                }
+            }
+        `;
+        const { data } = await client.query({
+            query,
+            variables: { id: params.id },
+        });
+
+        return { data: data[resource] };
+    },
+    // ...
+```
+
+### 4. `create` et `update` : Exécuter des Mutations
+
+```typescript
+// src/customGraphQLDataProvider.ts
+// ...
+    create: async (resource, params) => {
+        const mutation = gql`
+            mutation ${resource}Create($data: ${resource}Input!) {
+                create${resource} (data: $data) {
+                    id
+                    // ... vos champs de ressource mis à jour
+                }
+            }
+        `;
+        const { data } = await client.mutate({
+            mutation,
+            variables: { data: params.data },
+        });
+
+        return { data: data[`create${resource}`] };
+    },
+
+    update: async (resource, params) => {
+        const mutation = gql`
+            mutation ${resource}Update($id: ID!, $data: ${resource}Input!) {
+                update${resource} (id: $id, data: $data) {
+                    id
+                    // ... vos champs de ressource mis à jour
+                }
+            }
+        `;
+        const { data } = await client.mutate({
+            mutation,
+            variables: { id: params.id, data: params.data },
+        });
+
+        return { data: data[`update${resource}`] };
+    },
+    // ...
+};
+```
+<Callout type="warning">
+**Attention** : Les noms des mutations (`createResource`, `updateResource`) et des types (`ResourceInput`) dépendent de votre schéma GraphQL. Adaptez-les en conséquence.
+</Callout>
+
+## ✨ Conclusion
+
+La création d'un `dataProvider` sur-mesure est l'un des aspects les plus puissants de React-Admin. Elle vous offre la liberté de connecter votre interface d'administration à n'importe quel type de backend, qu'il s'agisse d'une API REST avec des conventions uniques ou d'un service GraphQL.
+
+En maîtrisant cette compétence, vous pouvez :
+-   **Intégrer** React-Admin dans un écosystème existant sans modifier votre backend.
+-   **Optimiser** les requêtes pour des performances maximales.
+-   **Étendre** les fonctionnalités CRUD de base avec des logiques métier complexes.
+
+Votre `dataProvider` est le pont entre votre UI et vos données. Savoir le construire vous ouvre les portes d'une personnalisation illimitée et d'une intégration parfaite avec l'infrastructure de votre choix.

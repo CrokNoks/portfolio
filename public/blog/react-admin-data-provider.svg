@@ -1,0 +1,68 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Main Card -->
+  <rect x="50" y="50" width="700" height="300" rx="12" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="50" y="50" width="700" height="60" rx="12" fill="#ff6358" opacity="0.1"/>
+  <text x="400" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b">Custom DataProvider</text>
+  
+  <!-- DataProvider Hub (Center) -->
+  <rect x="320" y="130" width="160" height="100" rx="12" fill="#ff6358" opacity="0.15"/>
+  <rect x="340" y="150" width="120" height="60" rx="8" fill="#ff6358"/>
+  <text x="400" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">DataProvider</text>
+  
+  <!-- REST API (Left) -->
+  <rect x="80" y="140" width="140" height="90" rx="8" fill="#f1f5f9" stroke="#2E8B57" stroke-width="2"/>
+  <text x="150" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#2E8B57">REST API</text>
+  <text x="150" y="185" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">GET /posts</text>
+  <text x="150" y="200" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">POST /users</text>
+  <text x="150" y="215" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">PUT /items/1</text>
+  
+  <!-- Arrow to DataProvider -->
+  <path d="M 220 180 L 330 180" stroke="#2E8B57" stroke-width="2" fill="none"/>
+  <polygon points="325,180 315,175 315,185" fill="#2E8B57"/>
+  
+  <!-- Arrow from DataProvider -->
+  <path d="M 480 180 L 590 180" stroke="#2E8B57" stroke-width="2" fill="none"/>
+  <polygon points="585,180 575,175 575,185" fill="#2E8B57"/>
+  
+  <!-- React Admin (Right) -->
+  <rect x="580" y="140" width="140" height="90" rx="8" fill="#f1f5f9" stroke="#61DAFB" stroke-width="2"/>
+  <text x="650" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#61DAFB">React Admin</text>
+  <text x="650" y="185" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">&lt;List&gt;</text>
+  <text x="650" y="200" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">&lt;Edit&gt;</text>
+  <text x="650" y="215" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">&lt;Create&gt;</text>
+  
+  <!-- GraphQL Section (Bottom) -->
+  <rect x="200" y="260" width="400" height="70" rx="8" fill="#f1f5f9" stroke="#E10098" stroke-width="2"/>
+  <text x="400" y="285" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#E10098">GraphQL</text>
+  
+  <!-- GraphQL Query -->
+  <rect x="220" y="295" width="170" height="25" rx="4" fill="#1e293b"/>
+  <text x="305" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#E10098">{</text>
+  <text x="315" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#10b981">users</text>
+  <text x="350" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#E10098">{</text>
+  <text x="360" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#10b981">id</text>
+  <text x="385" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#E10098">}</text>
+  <text x="395" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#E10098">}</text>
+  
+  <!-- Arrow -->
+  <text x="410" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">→</text>
+  
+  <!-- GraphQL Response -->
+  <rect x="450" y="295" width="130" height="25" rx="4" fill="#1e293b"/>
+  <text x="515" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#E10098">{</text>
+  <text x="525" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#10b981">"data"</text>
+  <text x="560" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#E10098">:</text>
+  <text x="570" y="311" text-anchor="middle" font-family="monospace" font-size="9" fill="#10b981">{...}</text>
+  
+  <!-- CRUD Methods (Top) -->
+  <text x="400" y="115" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">getList • getOne • create • update • delete</text>
+  
+  <!-- Code Annotation -->
+  <rect x="280" y="20" width="240" height="25" rx="12" fill="#1e293b"/>
+  <text x="400" y="37" text-anchor="middle" font-family="monospace" font-size="11" fill="#ff6358">customDataProvider</text>
+</svg>

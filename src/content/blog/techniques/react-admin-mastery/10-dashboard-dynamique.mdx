@@ -1,0 +1,282 @@
+---
+title: "React-Admin : Construire un Dashboard Dynamique et Pertinent"
+description: "Transformez la page d'accueil de votre application React-Admin en un dashboard utile avec des KPIs, des listes d'activités récentes et des graphiques."
+category: "techniques"
+tags: ["React", "React-Admin", "Dashboard", "Charts", "Recharts", "UI", "UX"]
+publishedAt: "2025-02-25"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/react-admin-dashboard.svg"
+series: "react-admin-mastery"
+episode: 10
+---
+
+# React-Admin : Construire un Dashboard Dynamique et Pertinent
+
+La page d'accueil par défaut de React-Admin est intentionnellement vide. C'est une toile blanche qui représente une opportunité en or : celle de fournir une valeur immédiate à vos utilisateurs dès leur connexion. Un bon dashboard transforme une simple interface de gestion de données en un véritable outil de pilotage.
+
+Dans cet article, nous allons construire pas à pas un dashboard complet en utilisant :
+1.  Le prop `dashboard` du composant `<Admin>`.
+2.  Les hooks de data fetching comme `useGetList` pour afficher des KPIs.
+3.  La bibliothèque `Recharts` pour créer des graphiques percutants.
+
+<TechStack 
+  technologies={[
+    { name: "React-Admin", color: "#ff6358" },
+    { name: "Recharts", color: "#8884d8" },
+    { name: "Material-UI", color: "#0081cb" }
+  ]}
+/>
+
+## 👨‍🎨 Partie 1 : Remplacer le Dashboard par Défaut
+
+La première étape consiste à créer votre propre composant de dashboard et à le déclarer dans `<Admin>`.
+
+```tsx
+// src/dashboard/MyDashboard.tsx
+import * as React from 'react';
+import { Card, CardContent, CardHeader } from '@mui/material';
+
+const MyDashboard = () => (
+    <Card>
+        <CardHeader title="Bienvenue dans l'administration" />
+        <CardContent>
+            Ceci est votre nouveau tableau de bord. Vous pouvez y afficher
+            des statistiques, des graphiques, des raccourcis, etc.
+        </CardContent>
+    </Card>
+);
+
+export default MyDashboard;
+```
+
+```tsx
+// src/App.tsx
+import { Admin } from 'react-admin';
+import MyDashboard from './dashboard/MyDashboard';
+
+const App = () => (
+    <Admin dashboard={MyDashboard} /* ... */ >
+        {/* ... */}
+    </Admin>
+);
+```
+Et voilà ! Votre page d'accueil affiche maintenant votre composant personnalisé.
+
+## 📈 Partie 2 : Afficher des Données et Statistiques
+
+L'intérêt d'un dashboard est de présenter des données. Pour cela, React-Admin propose des hooks de data fetching que l'on peut utiliser n'importe où, y compris dans notre dashboard.
+
+### Exemple 1 : Cartes de KPIs (Indicateurs Clés de Performance)
+
+Affichons des cartes avec des chiffres importants : nombre total d'utilisateurs, de commandes, etc. Le hook `useGetList` avec une pagination minimale nous donnera le `total`.
+
+```tsx
+// src/dashboard/KpiCard.tsx
+import * as React from 'react';
+import { useGetList } from 'react-admin';
+import { Card, CardContent, Typography, CircularProgress } from '@mui/material';
+
+const KpiCard = ({ resource, title }: { resource: string; title: string }) => {
+    const { total, isLoading, error } = useGetList(resource, {
+        pagination: { page: 1, perPage: 1 },
+    });
+
+    if (isLoading) return <CircularProgress />;
+    if (error) return <Typography color="error">Erreur</Typography>;
+
+    return (
+        <Card>
+            <CardContent>
+                <Typography variant="h5" component="div">
+                    {total}
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    {title}
+                </Typography>
+            </CardContent>
+        </Card>
+    );
+};
+
+// Utilisation dans MyDashboard.tsx
+// <KpiCard resource="users" title="Utilisateurs" />
+// <KpiCard resource="orders" title="Commandes" />
+```
+
+### Exemple 2 : Liste d'Activités Récentes
+
+Utilisons à nouveau `useGetList` pour afficher les 5 dernières commandes.
+
+```tsx
+// src/dashboard/RecentOrders.tsx
+import * as React from 'react';
+import { useGetList, Link } from 'react-admin';
+import { List, ListItem, ListItemText, Typography } from '@mui/material';
+
+const RecentOrders = () => {
+    const { data, isLoading } = useGetList('orders', {
+        pagination: { page: 1, perPage: 5 },
+        sort: { field: 'date', order: 'DESC' },
+    });
+
+    if (isLoading) return <p>Chargement...</p>;
+
+    return (
+        <React.Fragment>
+            <Typography variant="h6">Dernières commandes</Typography>
+            <List>
+                {data?.map(order => (
+                    <ListItem 
+                        key={order.id}
+                        button 
+                        component={Link} 
+                        to={`/orders/${order.id}`}
+                    >
+                        <ListItemText 
+                            primary={`Commande #${order.reference}`}
+                            secondary={`${order.total} € - ${new Date(order.date).toLocaleDateString()}`} 
+                        />
+                    </ListItem>
+                ))}
+            </List>
+        </React.Fragment>
+    );
+};
+```
+
+## 📊 Partie 3 : Intégrer des Graphiques avec Recharts
+
+Un bon graphique vaut mille tableaux. `Recharts` est une excellente bibliothèque de graphiques pour React.
+
+**Installation :**
+```bash
+npm install recharts
+# ou
+yarn add recharts
+```
+
+### Exemple : Graphique des Ventes des 30 derniers jours
+
+Nous allons créer un graphique linéaire. Cela nécessite de récupérer les données (par exemple, les commandes des 30 derniers jours) et de les formater pour `Recharts`.
+
+```tsx
+// src/dashboard/SalesChart.tsx
+import * as React from 'react';
+import { useGetList } from 'react-admin';
+import { Card, CardContent, CardHeader } from '@mui/material';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+} from 'recharts';
+import { subDays, format } from 'date-fns';
+
+const aggregateSales = (orders) => {
+    if (!orders) return [];
+    const salesByDay = orders.reduce((acc, order) => {
+        const day = format(new Date(order.date), 'yyyy-MM-dd');
+        if (!acc[day]) {
+            acc[day] = 0;
+        }
+        acc[day] += order.total;
+        return acc;
+    }, {});
+
+    return Object.keys(salesByDay).map(day => ({
+        date: day,
+        total: salesByDay[day],
+    })).sort((a, b) => a.date.localeCompare(b.date));
+};
+
+const SalesChart = () => {
+    const thirtyDaysAgo = subDays(new Date(), 30);
+    const { data } = useGetList('orders', {
+        filter: { date_gte: thirtyDaysAgo.toISOString() },
+        pagination: { page: 1, perPage: 1000 }, // Assurez-vous de récupérer toutes les données nécessaires
+        sort: { field: 'date', order: 'ASC' },
+    });
+
+    const aggregatedData = aggregateSales(data);
+
+    return (
+        <Card>
+            <CardHeader title="Ventes des 30 derniers jours" />
+            <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={aggregatedData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="total" stroke="#8884d8" activeDot={{ r: 8 }} />
+                    </LineChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    );
+};
+
+export default SalesChart;
+```
+
+<Callout type="warning">
+**Performance** : Pour des graphiques complexes, il est souvent plus performant de créer un endpoint d'API dédié qui retourne les données déjà agrégées, plutôt que de tout calculer côté client.
+</Callout>
+
+## ✨ Mettre le tout ensemble
+
+Maintenant, assemblons notre dashboard complet en utilisant une grille MUI pour l'agencement.
+
+```tsx
+// src/dashboard/MyDashboard.tsx
+import * as React from 'react';
+import { Grid } from '@mui/material';
+import KpiCard from './KpiCard';
+import RecentOrders from './RecentOrders';
+import SalesChart from './SalesChart';
+
+const MyDashboard = () => (
+    <Grid container spacing={3}>
+        {/* Ligne de KPIs */}
+        <Grid item xs={12} sm={4}>
+            <KpiCard resource="users" title="Utilisateurs" />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+            <KpiCard resource="orders" title="Commandes" />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+            <KpiCard resource="reviews" title="Avis" />
+        </Grid>
+        
+        {/* Graphique des ventes */}
+        <Grid item xs={12} md={8}>
+            <SalesChart />
+        </Grid>
+
+        {/* Activités récentes */}
+        <Grid item xs={12} md={4}>
+            <RecentOrders />
+        </Grid>
+    </Grid>
+);
+
+export default MyDashboard;
+```
+
+## 🚀 Conclusion
+
+Vous avez transformé la page d'accueil vide de React-Admin en un tableau de bord puissant et informatif. En maîtrisant ces concepts, vous pouvez créer une expérience sur mesure qui apporte une valeur immense à vos utilisateurs.
+
+Retenez ces trois points clés :
+1.  Utilisez le prop **`<Admin dashboard={...}>`** comme point d'entrée.
+2.  Exploitez les **hooks de data fetching** (`useGetList`, etc.) pour récupérer les données nécessaires.
+3.  Intégrez une **bibliothèque de graphiques** comme `Recharts` pour visualiser vos données.
+
+Un bon dashboard est la première chose que vos utilisateurs voient. Faites en sorte qu'il soit non seulement beau, mais surtout utile !

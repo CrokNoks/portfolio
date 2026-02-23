@@ -1,0 +1,69 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Main Card -->
+  <rect x="50" y="50" width="700" height="300" rx="12" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="50" y="50" width="700" height="60" rx="12" fill="#ff6358" opacity="0.1"/>
+  <text x="400" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b">Advanced Forms</text>
+  
+  <!-- Wizard (Left) -->
+  <rect x="80" y="140" width="200" height="180" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="180" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">Wizard (Multi-step)</text>
+  
+  <!-- Step indicators -->
+  <circle cx="120" cy="190" r="12" fill="#ff6358"/>
+  <text x="120" y="194" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">1</text>
+  <line x1="135" y1="190" x2="165" y2="190" stroke="#e2e8f0" stroke-width="2"/>
+  <circle cx="180" cy="190" r="12" fill="#e2e8f0"/>
+  <text x="180" y="194" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#64748b">2</text>
+  <line x1="195" y1="190" x2="225" y2="190" stroke="#e2e8f0" stroke-width="2"/>
+  <circle cx="240" cy="190" r="12" fill="#e2e8f0"/>
+  <text x="240" y="194" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#64748b">3</text>
+  
+  <!-- Step content boxes -->
+  <rect x="100" y="215" width="160" height="30" rx="4" fill="white" stroke="#e2e8f0"/>
+  <text x="180" y="233" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">Step 1: Info</text>
+  <rect x="100" y="255" width="160" height="30" rx="4" fill="white" stroke="#e2e8f0"/>
+  <text x="180" y="273" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">Step 2: Details</text>
+  <rect x="100" y="295" width="160" height="30" rx="4" fill="white" stroke="#e2e8f0"/>
+  <text x="180" y="313" text-anchor="middle" font-family="monospace" font-size="9" fill="#64748b">Step 3: Review</text>
+  
+  <!-- File Upload (Center) -->
+  <rect x="310" y="160" width="180" height="140" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="400" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">File Upload</text>
+  
+  <!-- Upload box -->
+  <rect x="340" y="200" width="120" height="80" rx="8" fill="white" stroke="#94a3b8" stroke-dasharray="4,4"/>
+  <rect x="370" y="225" width="60" height="10" rx="5" fill="#61DAFB" opacity="0.3"/>
+  <rect x="370" y="225" width="40" height="10" rx="5" fill="#61DAFB"/>
+  <text x="400" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Drag files here</text>
+  <text x="400" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#94a3b8">or click to browse</text>
+  
+  <!-- Conditional Fields (Right) -->
+  <rect x="520" y="140" width="200" height="180" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="620" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">Conditional Fields</text>
+  
+  <!-- Field 1 -->
+  <rect x="540" y="180" width="160" height="25" rx="4" fill="white" stroke="#e2e8f0"/>
+  <text x="620" y="196" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">User Type</text>
+  <rect x="680" y="185" width="15" height="15" rx="7" fill="#ff6358"/>
+  <text x="687" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">v</text>
+  
+  <!-- Conditional arrow -->
+  <text x="620" y="225" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">↓ shows based on selection</text>
+  
+  <!-- Field 2 (conditional) -->
+  <rect x="540" y="235" width="160" height="25" rx="4" fill="#ff6358" opacity="0.1" stroke="#ff6358"/>
+  <text x="620" y="251" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#ff6358">Company Name</text>
+  
+  <!-- Field 3 (conditional) -->
+  <rect x="540" y="270" width="160" height="25" rx="4" fill="#10b981" opacity="0.1" stroke="#10b981"/>
+  <text x="620" y="286" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#10b981">Personal Email</text>
+  
+  <!-- Code Annotation -->
+  <rect x="280" y="20" width="240" height="25" rx="12" fill="#1e293b"/>
+  <text x="400" y="37" text-anchor="middle" font-family="monospace" font-size="11" fill="#ff6358">&lt;SimpleForm&gt;</text>
+</svg>

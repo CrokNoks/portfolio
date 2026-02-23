@@ -1,0 +1,237 @@
+---
+title: "React-Admin : Theming et Personnalisation de l'UI de A à Z"
+description: "Donnez une identité unique à votre application React-Admin. Apprenez à créer des thèmes, personnaliser le layout et surcharger les styles des composants."
+category: "techniques"
+tags: ["React", "React-Admin", "Theming", "UI", "UX", "Material-UI", "CSS"]
+publishedAt: "2025-02-24"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/react-admin-theming.svg"
+series: "react-admin-mastery"
+episode: 9
+---
+
+# React-Admin : Theming et Personnalisation de l'UI de A à Z
+
+Une application d'administration se doit d'être fonctionnelle, mais son apparence est tout aussi cruciale pour l'adoption par les utilisateurs et le respect de l'identité de marque. React-Admin est construit sur la puissante bibliothèque de composants **Material-UI (MUI)**, ce qui le rend extraordinairement personnalisable.
+
+Oubliez le look par défaut ! Dans cet article, nous allons explorer les trois niveaux de personnalisation de l'UI :
+1.  **Le Theming Global** : Pour définir une palette de couleurs, une typographie et un style de base cohérents.
+2.  **Le Layout sur mesure** : Pour réorganiser la structure principale de votre application (menu, barre de navigation, etc.).
+3.  **La Surcharge de Styles** : Pour peaufiner le style de composants spécifiques.
+
+<TechStack 
+  technologies={[
+    { name: "React-Admin", color: "#ff6358" },
+    { name: "Material-UI", color: "#0081cb" },
+    { name: "CSS", color: "#2965f1" }
+  ]}
+/>
+
+## 🎨 Partie 1 : Le Theming Global
+
+Le moyen le plus simple et le plus efficace de personnaliser votre application est de définir un thème. Ce thème est un simple objet JavaScript que vous passez au prop `theme` du composant `<Admin>`.
+
+### Créer un Thème Personnalisé
+
+Utilisez la fonction `createTheme` de MUI pour définir votre palette de couleurs, votre typographie, vos espacements, etc.
+
+```tsx
+// src/theme.ts
+import { createTheme } from '@mui/material/styles';
+import { indigo, pink } from '@mui/material/colors';
+
+export const mainTheme = createTheme({
+    palette: {
+        primary: indigo,
+        secondary: pink,
+        mode: 'light', // 'light' ou 'dark'
+    },
+    typography: {
+        fontFamily: 'Roboto, sans-serif',
+    },
+    shape: {
+        borderRadius: 8,
+    },
+});
+```
+
+Ensuite, appliquez-le à votre application :
+
+```tsx
+// src/App.tsx
+import { Admin } from 'react-admin';
+import { mainTheme } from './theme';
+
+const App = () => (
+    <Admin theme={mainTheme} /* ... */ >
+        {/* ... */}
+    </Admin>
+);
+```
+En quelques lignes, toutes les couleurs primaires de votre application (boutons, liens, etc.) utiliseront la teinte `indigo`, et les couleurs secondaires la teinte `pink`.
+
+### Mettre en place un Dark Mode
+
+Gérer un mode clair et un mode sombre est très simple. Créez deux thèmes et un moyen de basculer entre eux. React-Admin fournit même un hook `useTheme` et un composant `<ToggleThemeButton>` pour cela.
+
+```tsx
+// src/themes.ts
+import { defaultTheme } from 'react-admin';
+
+export const lightTheme = defaultTheme;
+
+export const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
+```
+
+```tsx
+// src/MyLayout.tsx
+import { AppBar, Layout, ToggleThemeButton } from 'react-admin';
+
+const MyAppBar = (props) => (
+    <AppBar {...props}>
+        <Box flex="1">
+            <Typography variant="h6" id="react-admin-title"></Typography>
+        </Box>
+        <ToggleThemeButton
+            lightTheme={lightTheme}
+            darkTheme={darkTheme}
+        />
+    </AppBar>
+);
+
+export const MyLayout = (props) => <Layout {...props} appBar={MyAppBar} />;
+```
+
+<Callout type="info">
+Vous pouvez passer les thèmes `lightTheme` et `darkTheme` directement au bouton, ou utiliser un `ThemeProvider` plus global comme vu dans les articles précédents pour une gestion plus centralisée.
+</Callout>
+
+## 🏗️ Partie 2 : Le Layout sur mesure
+
+Le prop `layout` du composant `<Admin>` vous permet de remplacer complètement la disposition par défaut (barre de navigation, menu latéral).
+
+### Anatomie d'un Layout React-Admin
+
+Un layout est un composant qui utilise généralement les briques de base fournies par React-Admin :
+-   `<Layout>`: Le composant racine.
+-   `<AppBar>`: La barre de navigation supérieure.
+-   `<Menu>`: Le menu de navigation (généralement dans la sidebar).
+-   `<Sidebar>`: Le conteneur du menu latéral.
+
+### Exemple : Un Layout avec un Menu Compact
+
+Créons un layout où le menu est réduit à de simples icônes par défaut.
+
+```tsx
+// src/MyLayout.tsx
+import { Layout, Sidebar } from 'react-admin';
+import { MyAppBar } from './MyAppBar'; // Notre AppBar avec le ToggleThemeButton
+import { MyMenu } from './MyMenu'; // Un menu personnalisé
+
+const MySidebar = (props) => <Sidebar {...props} size={80} />;
+
+export const MyLayout = (props) => (
+    <Layout 
+        {...props} 
+        appBar={MyAppBar} 
+        menu={MyMenu}
+        sidebar={MySidebar}
+    />
+);
+```
+En passant votre propre composant `sidebar`, vous pouvez en contrôler la largeur (`size`) et le comportement.
+
+## 💅 Partie 3 : La Surcharge de Styles (Overrides)
+
+Parfois, vous ne voulez changer que le style d'un composant spécifique, pas le thème entier.
+
+### Solution 1 : Le Prop `sx` pour des changements rapides
+
+Presque tous les composants MUI et React-Admin acceptent un prop `sx`. C'est idéal pour des ajustements ponctuels.
+
+```jsx
+// Changer la couleur de fond de l'en-tête d'un Datagrid
+<Datagrid
+    sx={{
+        '& .RaDatagrid-headerCell': {
+            backgroundColor: 'lavender',
+        },
+    }}
+>
+    {/* ... */}
+</Datagrid>
+```
+
+### Solution 2 : `styled` pour des composants réutilisables
+
+Si vous prévoyez de réutiliser un composant stylisé, la fonction `styled` de MUI est parfaite.
+
+```tsx
+import { styled } from '@mui/material/styles';
+import { Datagrid } from 'react-admin';
+
+const MyStyledDatagrid = styled(Datagrid)({
+    '& .RaDatagrid-headerCell': {
+        backgroundColor: 'aliceblue',
+        fontWeight: 'bold',
+    },
+    '& .RaDatagrid-row': {
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+        },
+    },
+});
+
+// Utilisation : <MyStyledDatagrid>...</MyStyledDatagrid>
+```
+
+### Solution 3 : Overrides globaux dans le Thème
+
+La méthode la plus puissante consiste à définir des surcharges de style pour des types de composants directement dans votre thème. Le style sera appliqué partout.
+
+```ts
+// src/theme.ts
+export const mainTheme = createTheme({
+    // ...palette, etc.
+    components: {
+        // Nom du composant
+        MuiButton: {
+            styleOverrides: {
+                // Règle de style
+                root: {
+                    // Styles CSS
+                    textTransform: 'none', // Annuler la capitalisation par défaut
+                    borderRadius: 20,
+                },
+            },
+        },
+        RaDatagrid: {
+            styleOverrides: {
+                root: {
+                    '& .RaDatagrid-headerCell': {
+                        backgroundColor: 'whitesmoke',
+                    }
+                }
+            }
+        }
+    },
+});
+```
+
+<Callout type="warning">
+**Comment trouver les classes CSS ?** Pour connaître les noms des classes à surcharger (`RaDatagrid-headerCell`, etc.), le plus simple est d'utiliser les outils de développement de votre navigateur pour inspecter le DOM.
+</Callout>
+
+## ✨ Conclusion
+
+Personnaliser l'interface de React-Admin est un jeu de poupées russes, vous offrant plusieurs niveaux de contrôle pour un ajustement parfait :
+1.  **Le Thème (`<Admin theme>`)** : Pour une cohérence globale (couleurs, polices).
+2.  **Le Layout (`<Admin layout>`)** : Pour la structure et l'agencement de l'application.
+3.  **Les Surcharges de Style (`sx`, `styled`, `theme.components`)** : Pour un contrôle fin sur chaque composant.
+
+En maîtrisant ces trois niveaux, vous pouvez transformer une application React-Admin standard en une expérience utilisateur unique, professionnelle et parfaitement alignée sur votre marque.

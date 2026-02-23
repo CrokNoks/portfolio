@@ -1,0 +1,63 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Main Card -->
+  <rect x="50" y="50" width="700" height="300" rx="12" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="50" y="50" width="700" height="60" rx="12" fill="#ff6358" opacity="0.1"/>
+  <text x="400" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b">Authentication &amp; Security</text>
+  
+  <!-- Lock Icon (Center) -->
+  <rect x="360" y="120" width="80" height="70" rx="8" fill="#ff6358" opacity="0.15"/>
+  <rect x="380" y="145" width="40" height="35" rx="4" fill="#ff6358"/>
+  <rect x="392" y="135" width="16" height="14" rx="8" fill="none" stroke="#ff6358" stroke-width="4"/>
+  <circle cx="400" cy="162" r="3" fill="white"/>
+  
+  <!-- JWT Token (Left) -->
+  <rect x="80" y="140" width="140" height="100" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="150" y="160" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">eyJhbGciOiJIUz...</text>
+  <rect x="90" y="170" width="120" height="1" fill="#e2e8f0"/>
+  <text x="150" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#1e293b" font-weight="bold">JWT Token</text>
+  <rect x="100" y="205" width="100" height="20" rx="10" fill="#3b82f6"/>
+  <text x="150" y="218" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="white">Bearer Auth</text>
+  
+  <!-- OAuth Section (Right) -->
+  <rect x="580" y="140" width="140" height="100" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="650" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#1e293b" font-weight="bold">OAuth 2.0</text>
+  
+  <!-- GitHub Icon -->
+  <rect x="600" y="175" width="40" height="30" rx="4" fill="#24292e"/>
+  <text x="620" y="194" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">GH</text>
+  
+  <!-- Google Icon -->
+  <rect x="660" y="175" width="40" height="30" rx="4" fill="#4285f4"/>
+  <text x="680" y="194" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">G</text>
+  
+  <!-- Roles Section (Bottom Left) -->
+  <rect x="80" y="260" width="200" height="70" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="180" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#1e293b" font-weight="bold">Roles &amp; Permissions</text>
+  
+  <!-- Role badges -->
+  <rect x="100" y="290" width="50" height="20" rx="10" fill="#8b5cf6"/>
+  <text x="125" y="303" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="white">Admin</text>
+  
+  <rect x="160" y="290" width="60" height="20" rx="10" fill="#10b981"/>
+  <text x="190" y="303" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="white">Editor</text>
+  
+  <rect x="230" y="290" width="35" height="20" rx="10" fill="#64748b"/>
+  <text x="247" y="303" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="white">User</text>
+  
+  <!-- Auth Flow Arrow (Center Bottom) -->
+  <path d="M 340 270 L 460 270" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+  <polygon points="455,270 445,265 445,275" fill="#e2e8f0"/>
+  
+  <!-- CheckAuth (Middle) -->
+  <rect x="330" y="290" width="140" height="40" rx="8" fill="#10b981" opacity="0.15"/>
+  <text x="400" y="315" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#10b981" font-weight="bold">checkAuth()</text>
+  
+  <!-- Code Annotation -->
+  <rect x="280" y="20" width="240" height="25" rx="12" fill="#1e293b"/>
+  <text x="400" y="37" text-anchor="middle" font-family="monospace" font-size="11" fill="#ff6358">authProvider</text>
+</svg>

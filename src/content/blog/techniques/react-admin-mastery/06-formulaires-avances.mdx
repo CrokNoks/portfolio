@@ -1,0 +1,264 @@
+---
+title: "React-Admin : Formulaires Avancés (Wizards, Uploads, Champs conditionnels)"
+description: "Passez au niveau supérieur dans la création de formulaires React-Admin avec des formulaires multi-étapes (wizards), la gestion des uploads de fichiers et les champs conditionnels."
+category: "techniques"
+tags: ["React", "React-Admin", "Forms", "Wizards", "Uploads", "Conditional Fields"]
+publishedAt: "2025-02-20"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/react-admin-forms.svg"
+series: "react-admin-mastery"
+episode: 6
+---
+
+# React-Admin : Formulaires Avancés (Wizards, Uploads, Champs conditionnels)
+
+Les formulaires sont au cœur de toute application d'administration. Si React-Admin brille par sa simplicité avec `<SimpleForm>` et `<TabbedForm>`, les applications du monde réel exigent souvent des interactions plus complexes.
+
+Dans cet article, nous allons explorer trois techniques avancées pour construire des formulaires puissants et intuitifs :
+1.  **Formulaires Multi-étapes (Wizards)** : Pour guider l'utilisateur à travers des processus de saisie complexes.
+2.  **Gestion des Uploads de Fichiers** : Pour permettre aux utilisateurs d'envoyer des fichiers (images, documents) via vos formulaires.
+3.  **Champs Conditionnels et Dépendants** : Pour créer des formulaires dynamiques qui s'adaptent en temps réel aux choix de l'utilisateur.
+
+<TechStack 
+  technologies={[
+    { name: "React-Admin", color: "#ff6358" },
+    { name: "TypeScript", color: "#3178c6" },
+    { name: "Material-UI", color: "#0081cb" }
+  ]}
+/>
+
+## 🧙‍♂️ Partie 1 : Formulaires Multi-étapes (Wizards)
+
+Un formulaire long et complexe peut être intimidant. Le diviser en étapes logiques, ou "wizard", améliore considérablement l'expérience utilisateur.
+
+La stratégie consiste à utiliser un état local pour suivre l'étape actuelle et à afficher les champs de manière conditionnelle.
+
+### Exemple : Création d'un Produit en 3 Étapes
+
+Imaginons un formulaire de création de produit avec trois étapes : "Informations de base", "Média", et "Inventaire".
+
+```jsx
+// src/products/ProductCreate.tsx
+import React, { useState } from 'react';
+import { Create, SimpleForm, TextInput, NumberInput, SaveButton, Toolbar } from 'react-admin';
+import { Stepper, Step, StepLabel, Button, Box, Typography } from '@mui/material';
+
+const steps = ['Informations de base', 'Média', 'Inventaire'];
+
+const ProductCreateToolbar = (props) => (
+    <Toolbar {...props}>
+        <SaveButton />
+    </Toolbar>
+);
+
+const ProductCreate = () => {
+    const [activeStep, setActiveStep] = useState(0);
+
+    const handleNext = () => setActiveStep(prev => prev + 1);
+    const handleBack = () => setActiveStep(prev => prev - 1);
+
+    return (
+        <Create>
+            <SimpleForm toolbar={<ProductCreateToolbar />}>
+                <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
+                    {steps.map(label => (
+                        <Step key={label}><StepLabel>{label}</StepLabel></Step>
+                    ))}
+                </Stepper>
+
+                {/* Étape 1: Informations de base */}
+                {activeStep === 0 && (
+                    <Box>
+                        <Typography variant="h6">Informations de base</Typography>
+                        <TextInput source="name" validate={required()} fullWidth />
+                        <TextInput source="description" multiline fullWidth />
+                    </Box>
+                )}
+
+                {/* Étape 2: Média */}
+                {activeStep === 1 && (
+                    <Box>
+                        <Typography variant="h6">Média</Typography>
+                        <TextInput source="imageUrl" label="URL de l'image" fullWidth />
+                        <TextInput source="thumbnailUrl" label="URL de la miniature" fullWidth />
+                    </Box>
+                )}
+
+                {/* Étape 3: Inventaire */}
+                {activeStep === 2 && (
+                    <Box>
+                        <Typography variant="h6">Inventaire</Typography>
+                        <NumberInput source="stock" validate={required()} />
+                        <NumberInput source="price" validate={required()} />
+                    </Box>
+                )}
+
+                <Box display="flex" justifyContent="space-between" mt={3}>
+                    <Button onClick={handleBack} disabled={activeStep === 0}>
+                        Précédent
+                    </Button>
+                    <Button variant="contained" onClick={handleNext} disabled={activeStep === steps.length - 1}>
+                        Suivant
+                    </Button>
+                </Box>
+            </SimpleForm>
+        </Create>
+    );
+};
+
+export default ProductCreate;
+```
+
+<Callout type="tip">
+**UX Tip** : Le composant `<Stepper>` de Material-UI fournit un retour visuel crucial à l'utilisateur sur sa progression, réduisant ainsi la charge cognitive.
+</Callout>
+
+## 📤 Partie 2 : Gestion des Uploads de Fichiers
+
+Le composant `<FileInput>` de React-Admin est le point de départ, mais la magie opère réellement dans votre `dataProvider`.
+
+Lorsque vous utilisez `<FileInput>`, React-Admin passe un objet `File` à la méthode `create` ou `update` de votre `dataProvider`. C'est à vous de décider comment le traiter.
+
+### Scénario : Upload d'une Image de Profil
+
+1.  **Le Formulaire**
+
+```jsx
+// src/users/UserEdit.tsx
+import { Edit, SimpleForm, TextInput, FileInput, ImageField } from 'react-admin';
+
+export const UserEdit = () => (
+    <Edit>
+        <SimpleForm>
+            <TextInput source="name" />
+            <FileInput source="avatar" label="Avatar" accept="image/*">
+                <ImageField source="src" title="title" />
+            </FileInput>
+        </SimpleForm>
+    </Edit>
+);
+```
+Le composant `<ImageField>` à l'intérieur de `<FileInput>` sert à prévisualiser l'image.
+
+2.  **La Logique dans le `dataProvider`**
+
+Votre `dataProvider` doit intercepter le champ `avatar`, l'envoyer à votre service de stockage (S3, Firebase Storage, ou votre propre backend), puis remplacer l'objet `File` par l'URL retournée avant d'enregistrer le reste des données de l'utilisateur.
+
+```typescript
+// src/dataProvider.ts
+const dataProvider = {
+    // ... autres méthodes
+
+    update: async (resource, params) => {
+        if (resource === 'users' && params.data.avatar && params.data.avatar.rawFile instanceof File) {
+            const newAvatar = params.data.avatar;
+            const formData = new FormData();
+            formData.append('file', newAvatar.rawFile);
+
+            // 1. Uploader le fichier vers votre API/service de stockage
+            const response = await fetch('https://myapi.com/upload', {
+                method: 'POST',
+                body: formData,
+            });
+            const { url: uploadedUrl } = await response.json();
+
+            // 2. Mettre à jour l'enregistrement de l'utilisateur avec l'URL de l'image
+            const updatedUserData = {
+                ...params.data,
+                avatarUrl: uploadedUrl, // Votre backend attend `avatarUrl`
+                avatar: undefined, // Nettoyer l'objet FileInput
+            };
+
+            return httpClient(`${apiUrl}/${resource}/${params.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(updatedUserData),
+            }).then(({ json }) => ({ data: json }));
+        }
+
+        // Comportement par défaut pour les autres mises à jour
+        return httpClient(`${apiUrl}/${resource}/${params.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(params.data),
+        }).then(({ json }) => ({ data: json }));
+    },
+};
+```
+
+<Callout type="warning">
+**Important** : Cette logique doit être adaptée à votre backend. Certains backends permettent d'envoyer des données `multipart/form-data` contenant à la fois le fichier et les autres champs, ce qui simplifie le processus en une seule requête.
+</Callout>
+
+## ⛓️ Partie 3 : Champs Conditionnels avec `<FormDataConsumer>`
+
+`<FormDataConsumer>` est un composant de type "render prop" qui vous donne accès à toutes les données du formulaire actuel. C'est l'outil parfait pour créer des formulaires dynamiques.
+
+### Exemple : Afficher un champ "Autre"
+
+Imaginons un champ `category`. Si l'utilisateur choisit "Autre", nous voulons afficher un champ de texte pour qu'il puisse spécifier la catégorie.
+
+```jsx
+// Dans un formulaire de produit
+import { SelectInput, TextInput, FormDataConsumer } from 'react-admin';
+
+const categories = [
+    { id: 'tech', name: 'Technologie' },
+    { id: 'books', name: 'Livres' },
+    { id: 'other', name: 'Autre' },
+];
+
+<SelectInput source="category" choices={categories} />
+
+<FormDataConsumer>
+    {({ formData, ...rest }) => formData.category === 'other' &&
+        <TextInput source="otherCategory" label="Précisez la catégorie" {...rest} />
+    }
+</FormDataConsumer>
+```
+Le `...rest` est crucial : il propage les props nécessaires (comme `id`, `resource`) de `<FormDataConsumer>` au `TextInput`.
+
+### Exemple : Champs Dépendants
+
+On peut aussi créer des dépendances entre plusieurs `SelectInput`.
+
+```jsx
+// Dans un formulaire de commande
+import { SelectInput, FormDataConsumer } from 'react-admin';
+
+const countries = [
+    { id: 'fr', name: 'France' },
+    { id: 'us', name: 'États-Unis' },
+];
+
+const citiesByCountry = {
+    fr: [
+        { id: 'paris', name: 'Paris' },
+        { id: 'lyon', name: 'Lyon' },
+    ],
+    us: [
+        { id: 'ny', name: 'New York' },
+        { id: 'sf', name: 'San Francisco' },
+    ],
+};
+
+<SelectInput source="country" choices={countries} />
+
+<FormDataConsumer>
+    {({ formData, ...rest }) => formData.country &&
+        <SelectInput
+            source="city"
+            choices={citiesByCountry[formData.country]}
+            {...rest}
+        />
+    }
+</FormDataConsumer>
+```
+
+## ✨ Conclusion
+
+Les formulaires de React-Admin sont bien plus que de simples conteneurs de champs. En maîtrisant ces trois techniques avancées, vous pouvez transformer vos formulaires en expériences utilisateur riches et guidées :
+-   Les **Wizards** décomposent la complexité et réduisent la friction pour l'utilisateur.
+-   La gestion des **Uploads de Fichiers**, bien que nécessitant une logique côté `dataProvider`, est essentielle pour de nombreuses applications.
+-   Le `<FormDataConsumer>` ouvre la porte à des **formulaires dynamiques et intelligents** qui réagissent en temps réel.
+
+En combinant ces outils, vous êtes équipé pour construire des interfaces de saisie qui non seulement fonctionnent parfaitement mais sont aussi un plaisir à utiliser.
