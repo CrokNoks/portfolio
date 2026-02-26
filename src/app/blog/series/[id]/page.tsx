@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getSeriesById } from '@/lib/blog';
+import { getSeriesById, getAllSeries } from '@/lib/blog';
 import Link from 'next/link';
 import Image from 'next/image';
 import { format } from 'date-fns';
@@ -9,6 +9,13 @@ interface PageProps {
   params: Promise<{
     id: string;
   }>;
+}
+
+export async function generateStaticParams() {
+  const allSeries = getAllSeries();
+  return allSeries.map((series) => ({
+    id: series.id,
+  }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
