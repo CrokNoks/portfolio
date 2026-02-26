@@ -279,16 +279,18 @@ export function getAllSeries(): Series[] {
   const series: Series[] = [];
   seriesMap.forEach((posts, seriesId) => {
     if (posts.length > 0) {
-      const firstPost = posts[0];
+      // Trier les articles par partie pour s'assurer que le premier est bien le premier
+      const sortedPosts = [...posts].sort((a, b) => (a.seriesPart || 0) - (b.seriesPart || 0));
+      const firstPost = sortedPosts[0];
       series.push({
         id: seriesId,
         title: firstPost.seriesTitle || seriesId,
         description: firstPost.seriesTitle ? `Série : ${firstPost.seriesTitle}` : undefined,
         color: firstPost.seriesColor,
-        posts: posts,
-        totalPosts: posts.length,
+        posts: sortedPosts,
+        totalPosts: sortedPosts.length,
         totalExpected: firstPost.seriesTotalExpected,
-        isComplete: firstPost.seriesTotalExpected ? posts.length === firstPost.seriesTotalExpected : false,
+        isComplete: firstPost.seriesTotalExpected ? sortedPosts.length === firstPost.seriesTotalExpected : false,
         category: firstPost.category,
       });
     }

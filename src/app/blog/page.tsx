@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { getAllPosts } from '@/lib/blog';
+import { getAllPosts, getAllSeries, getLatestPosts } from '@/lib/blog';
 import Link from 'next/link';
 import Image from 'next/image';
+import SeriesCarousel from '@/components/sections/SeriesCarousel';
 
 export const metadata: Metadata = {
   title: 'Blog - Lucas GUERRIER',
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  const articles = getAllPosts();
+  const latestArticles = getLatestPosts(3);
+  const allSeries = getAllSeries();
   
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'dd MMMM yyyy', { locale: fr });
@@ -43,11 +45,24 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* Articles List */}
+      {/* Séries Carousel Section */}
+      <SeriesCarousel series={allSeries} />
+
+      {/* Latest Articles List */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-3xl font-bold">Articles <span className="gradient-text">Récents</span></h2>
+            <Link 
+              href="/blog/archive" 
+              className="text-primary hover:underline font-medium flex items-center gap-2"
+            >
+              Voir toutes les archives →
+            </Link>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles.map((article) => (
+            {latestArticles.map((article) => (
               <Link 
                 key={article.slug}
                 href={`/blog/${article.slug}`}
