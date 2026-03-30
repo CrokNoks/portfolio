@@ -1,0 +1,29 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Flow Line -->
+  <path d="M100 200 H700" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="8 8"/>
+  
+  <!-- User Intent -->
+  <circle cx="100" cy="200" r="40" fill="#6366f1" opacity="0.1"/>
+  <text x="100" y="260" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">USER INTENT</text>
+  <path d="M90 190 L110 210 M110 190 L90 210" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- PM Agent -->
+  <rect x="300" y="140" width="200" height="120" rx="12" fill="white" stroke="#D97706" stroke-width="2"/>
+  <rect x="300" y="140" width="200" height="30" rx="12" fill="#D97706" opacity="0.1"/>
+  <text x="400" y="160" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">PM AGENT (Spec Phase)</text>
+  <text x="320" y="200" font-family="monospace" font-size="10" fill="#64748b">Asking Questions...</text>
+  <text x="320" y="220" font-family="monospace" font-size="10" fill="#64748b">Defining Contracts...</text>
+  
+  <!-- Spec Artifact -->
+  <rect x="600" y="140" width="140" height="180" rx="8" fill="white" stroke="#1e293b" stroke-width="2"/>
+  <path d="M620 170 H720 M620 190 H720 M620 210 H680" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="670" y="280" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="#1e293b">spec.md</text>
+  <text x="670" y="300" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">docs/ folder</text>
+
+  <!-- Arrows -->
+  <path d="M150 200 L280 200" stroke="#6366f1" stroke-width="2"/>
+  <path d="M510 200 L580 200" stroke="#D97706" stroke-width="2"/>
+</svg>

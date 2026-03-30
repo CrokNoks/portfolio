@@ -1,0 +1,34 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Bare Repo -->
+  <rect x="50" y="150" width="180" height="100" rx="12" fill="#1e293b"/>
+  <text x="140" y="195" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="white">BARE REPO</text>
+  <text x="140" y="225" text-anchor="middle" font-family="monospace" font-size="12" fill="#4ade80">app_build/</text>
+  
+  <!-- Single Worktree Container -->
+  <rect x="350" y="80" width="400" height="240" rx="20" fill="white" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="8 8"/>
+  <text x="550" y="60" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="#64748b">ISOLATED CYCLE WORKTREE</text>
+  
+  <!-- Step 1: Engineer -->
+  <rect x="380" y="100" width="340" height="50" rx="8" fill="#f1f5f9" stroke="#6366f1" stroke-width="1"/>
+  <text x="400" y="130" font-family="monospace" font-size="10" fill="#1e293b">Step 1: Engineer (Implementing...)</text>
+  
+  <!-- Arrow Down -->
+  <path d="M550 150 V170" stroke="#e2e8f0" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Step 2: Tester -->
+  <rect x="380" y="175" width="340" height="50" rx="8" fill="#f1f5f9" stroke="#4ade80" stroke-width="1"/>
+  <text x="400" y="205" font-family="monospace" font-size="10" fill="#1e293b">Step 2: Tester (Validating...)</text>
+
+  <!-- Arrow Down -->
+  <path d="M550 225 V245" stroke="#e2e8f0" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Step 3: Reviewer -->
+  <rect x="380" y="250" width="340" height="50" rx="8" fill="#f1f5f9" stroke="#f43f5e" stroke-width="1"/>
+  <text x="400" y="280" font-family="monospace" font-size="10" fill="#1e293b">Step 3: Reviewer (Merging to Main)</text>
+  
+  <!-- Connection from Bare Repo -->
+  <path d="M230 200 H350" stroke="#1e293b" stroke-width="2" stroke-dasharray="4 4"/>
+</svg>

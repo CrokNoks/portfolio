@@ -1,0 +1,31 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Flow Line -->
+  <path d="M100 200 H700" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="8 8"/>
+  
+  <!-- Step 1: Engineer -->
+  <rect x="50" y="150" width="160" height="100" rx="12" fill="white" stroke="#6366f1" stroke-width="2"/>
+  <text x="130" y="180" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">1. ENGINEER</text>
+  <text x="130" y="210" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Code Implementation</text>
+  <circle cx="130" cy="235" r="5" fill="#6366f1"/>
+
+  <!-- Arrow -->
+  <path d="M210 200 L280 200" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- Step 2: Tester -->
+  <rect x="320" y="150" width="160" height="100" rx="12" fill="white" stroke="#4ade80" stroke-width="2"/>
+  <text x="400" y="180" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">2. TESTER</text>
+  <text x="400" y="210" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Validation & Tests</text>
+  <circle cx="400" cy="235" r="5" fill="#4ade80"/>
+
+  <!-- Arrow -->
+  <path d="M480 200 L550 200" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- Step 3: Reviewer -->
+  <rect x="590" y="150" width="160" height="100" rx="12" fill="white" stroke="#f43f5e" stroke-width="2"/>
+  <text x="670" y="180" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">3. REVIEWER</text>
+  <text x="670" y="210" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Final Merge (main)</text>
+  <circle cx="670" cy="235" r="5" fill="#f43f5e"/>
+</svg>

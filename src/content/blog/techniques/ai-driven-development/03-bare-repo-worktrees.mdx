@@ -1,0 +1,71 @@
+---
+title: "Isolation Industrielle : Bare Repo & Git Worktrees au service de l'IA"
+description: "Comment isoler l'exécution de l'IA pour garantir un code propre et sans conflit ? Plongez dans l'architecture app_build/ de mon boilerplate."
+category: "techniques"
+tags: ["AI", "Git", "Worktrees", "Architecture", "Engineering"]
+publishedAt: "2026-04-05"
+featured: false
+author: "Lucas GUERRIER"
+image: "/blog/ai-driven-dev-03.svg"
+---
+
+# Isolation Industrielle : Bare Repo & Git Worktrees pour l'IA
+
+Nous avons vu la phase de spécification (PM) et l'orchestration séquentielle (Engineer, Tester, Reviewer). Mais une question technique subsiste : comment ces agents peuvent-ils modifier le code source sans polluer votre propre espace de travail ?
+
+La réponse est le cœur technique de mon [Autonomous AI Developer Pipeline](https://github.com/CrokNoks/ai-driven-development-boilerplate) : **Le duo Bare Repo + Git Worktrees**.
+
+## 🎯 La Problématique : La pollution du contexte physique
+
+Si l'IA travaille directement dans votre dossier de projet, c'est le chaos assuré :
+1. L'IA génère des fichiers temporaires, des logs et des builds qui se mélangent à vos propres fichiers.
+2. L'IA risque d'halluciner en s'appuyant sur vos brouillons locaux non committés.
+3. Vous ne pouvez pas continuer à coder pendant que l'IA travaille.
+
+**La solution ?** Déporter tout le travail de l'IA dans un dossier isolé : `app_build/`.
+
+## 🏗️ L'Architecture du dossier `app_build/`
+
+Mon boilerplate utilise un dépôt Git **"Bare"**. Contrairement à un dépôt classique, il ne contient pas de fichiers de travail, seulement l'historique `.git`.
+
+Dès que le cycle de développement démarre :
+1. L'orchestrateur va dans le dossier `app_build/`.
+2. Il crée un **Git Worktree** (un dossier de travail physique) dédié au cycle en cours sur une branche de feature.
+
+### Pourquoi les Worktrees sont parfaits pour l'IA ?
+
+Les Worktrees permettent de créer un environnement "stérile" pour l'IA sans impacter votre dépôt principal :
+- **Isolation du contexte** : L'IA ne voit que le code propre de la branche, garantissant un contexte pur et sans "fichiers fantômes".
+- **Propreté absolue** : Tous les `node_modules`, builds et tests lancés par l'IA restent confinés dans le Worktree éphémère.
+- **Multi-Cycle** : Vous pouvez piloter plusieurs évolutions en parallèle, chaque cycle disposant de son propre Worktree indépendant dans `app_build/`.
+
+<Callout type="tip">
+💡 Le Worktree est le "bac à sable" idéal : l'IA peut tout casser ou tout générer sans que vous n'ayez jamais à nettoyer votre dossier `src/`.
+</Callout>
+
+## 🚀 Le Workflow de Validation et Fusion
+
+Le cycle se déroule de manière linéaire au sein de ce Worktree :
+1. **L'Engineer** implémente la feature sur la branche.
+2. **Le Tester** prend le relais dans le même environnement pour implémenter et lancer la suite de tests.
+3. **Le Reviewer** valide l'ensemble et merge la branche dans **main**.
+
+Une fois le merge terminé, le Worktree est supprimé via le script `clean.sh`.
+
+**Ce qui reste :**
+- Le code métier validé et fusionné dans votre branche principale.
+- **La spécification dans `docs/`**, qui servira de documentation de référence pour le futur.
+
+## 🌈 Conclusion : L'IA comme Pipeline de Déploiement
+
+Cette architecture transforme l'IA en une véritable machine de production. Ce n'est plus un tchat avec un assistant, c'est un pipeline industriel où l'on dépose une spec au début (SDD) et d'où ressort une feature testée et isolée à la fin.
+
+<Callout type="info">
+🚀 **Projet en mouvement** : L'Autonomous AI Developer Pipeline est un projet en constante évolution. De nouveaux concepts d'orchestration, de nouveaux agents spécialisés et des intégrations plus poussées (comme le Model Context Protocol) viendront enrichir cette architecture dans les mois à venir. Restez à l'affût !
+</Callout>
+
+---
+
+**C'est la fin de cette série sur l'Autonomous AI Developer Pipeline !** 
+*Si vous voulez arrêter de "parler" à l'IA pour commencer à l'orchestrer, allez jeter un œil au [boilerplate](https://github.com/CrokNoks/ai-driven-development-boilerplate) !*
+

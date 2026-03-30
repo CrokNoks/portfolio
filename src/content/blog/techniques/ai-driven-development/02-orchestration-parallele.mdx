@@ -1,0 +1,58 @@
+---
+title: "L'Orchestrateur Multi-Agents : Engineer, Tester et Reviewer en Action"
+description: "Plongez dans l'exécution automatisée : comment une équipe d'IA spécialisée transforme une spec MD en code testé et déployé."
+category: "techniques"
+tags: ["AI", "Multi-Agent", "Orchestration", "Engineer", "Tester"]
+publishedAt: "2026-04-02"
+featured: false
+author: "Lucas GUERRIER"
+image: "/blog/ai-driven-dev-02.svg"
+---
+
+# L'Orchestrateur Multi-Agents : Engineer, Tester et Reviewer en Action
+
+La spec Markdown a été validée par l'humain. C'est le signal de départ. À cet instant, l'**Autonomous AI Developer Pipeline** bascule dans sa phase la plus spectaculaire : le développement automatisé.
+
+## 🎯 La Problématique : Le goulot d'étranglement de l'agent unique
+
+Demander à un seul agent de coder, tester et valider l'architecture est risqué. Il finit par bâcler les tests pour finir le code, ou vice-versa.
+
+**La solution ?** L'orchestration multi-agents avec des rôles spécialisés définis dans le dossier `.agents/`.
+
+## 🏗️ L’Équipe Spécialisée (Le Trio Gagnant)
+
+Dès que la spec MD est disponible dans `docs/`, l'orchestrateur lance le cycle de développement :
+
+### 1. L'Agent Engineer : L'Implémenteur
+Il est le premier à entrer en scène. Il travaille dans son propre worktree pour transformer la spec en code métier sur une branche dédiée.
+> "Tu es l'Engineer. Ton contrat est la spec dans docs/. Produis le code métier."
+
+### 2. L'Agent Tester : L'Implémenteur de Tests
+Il intervient **après l'Engineer**. Son rôle n'est pas seulement de vérifier, mais d'**implémenter l'intégralité de la suite de tests** (unitaires, intégration, E2E) basée sur les critères d'acceptation de la spec MD.
+> "Tu es le Tester. Ton rôle est d'implémenter les tests nécessaires pour valider le code de l'Engineer. Assure-toi que chaque critère de la spec dans docs/ est couvert par un test automatisé."
+
+### 3. L'Agent Reviewer : La Conclusion
+Dernier maillon de la chaîne, il analyse la qualité globale. Si tout est vert (code + tests), il effectue le **merge final dans la branche main**.
+> "Tu es le Reviewer. Si le code est propre et les tests valides, merge la branche dans main et clôture le cycle."
+
+<Callout type="info">
+ℹ️ Cette organisation garantit qu'aucune ligne de code ne rejoint la branche principale sans avoir été doublement validée par le Tester et le Reviewer.
+</Callout>
+
+## 🚀 L'Intégrité de la Chaîne
+
+Plutôt qu'un parallélisme désordonné, cette orchestration garantit une **intégrité maximale**. Grâce aux worktrees isolés, chaque étape du cycle dispose d'une vision pure : l'Engineer se concentre sur l'implémentation, et le Tester peut ensuite valider le code dans un environnement sain sans risquer de conflits de fichiers temporaires.
+
+### Le Rôle des Skills (.agents/skills/)
+Chaque agent dispose de "Skills" atomiques pour communiquer ses résultats à l'orchestrateur. Une fois que l'Engineer a terminé, l'orchestrateur déclenche l'étape suivante pour l'agent Tester dans le même environnement de travail.
+
+
+## 🌈 Conclusion
+
+L'orchestration multi-agents transforme l'IA d'un simple assistant en une véritable force de frappe industrielle. Mais comment ces agents font-ils pour ne pas se marcher sur les pieds alors qu'ils travaillent sur le même projet ?
+
+**Dans le prochain article**, nous verrons l'infrastructure technique secrète : le **Bare Repo** et les **Git Worktrees**.
+
+---
+
+*Curieux de voir les définitions d'agents ? Allez voir le dossier `.agents/` sur le [repo](https://github.com/CrokNoks/ai-driven-development-boilerplate) !*

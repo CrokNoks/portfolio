@@ -1,0 +1,61 @@
+---
+title: "Spec-Driven Development (SDD) : Pourquoi votre PM est désormais un Agent IA"
+description: "Découvrez la Specification Phase : comment un agent PM transforme vos idées en contrats Markdown pour piloter une équipe d'IA autonomes."
+category: "techniques"
+tags: ["AI", "SDD", "Claude", "Product Management", "Architecture"]
+publishedAt: "2026-03-30"
+featured: true
+author: "Lucas GUERRIER"
+image: "/blog/ai-driven-dev-01.svg"
+---
+
+# Spec-Driven Development (SDD) : Pourquoi votre PM est désormais un Agent IA
+
+La plupart des échecs avec les agents IA (comme Claude Code ou Gemini CLI) viennent d'une mauvaise définition du besoin. On demande à l'IA de "coder un bouton", elle code un bouton, mais oublie la gestion d'erreur, l'accessibilité ou le style global.
+
+C'est là qu'intervient le **Spec-Driven Development (SDD)**, le cœur de mon [Autonomous AI Developer Pipeline](https://github.com/CrokNoks/ai-driven-development-boilerplate).
+
+## 🎯 La Problématique : L'hallucination par manque de cadre
+
+Un agent IA est une machine statistique. Sans un cadre strict, il remplit les vides par des suppositions (souvent fausses). Si vous lui donnez une tâche de code directement, il improvise l'architecture.
+
+**La solution ?** Ne jamais laisser un agent "Ingénieur" commencer sans une spécification validée par un agent "PM".
+
+## 🏗️ La "Specification Phase" : Le Contrat Markdown
+
+Dans mon boilerplate, tout cycle commence par la commande `/startcycle`. Cela déclenche la **Specification Phase** :
+
+1. **L'Agent PM prend le lead** : Il vous pose des questions sur l'intention, les contraintes et les APIs.
+2. **Rédaction du contrat** : Il génère un fichier Markdown dans `docs/`. Ce fichier contient :
+   - Le contrat d'interface (API, CLI).
+   - Les "User Stories" techniques.
+   - Les critères d'acceptation pour le Tester.
+3. **Validation Humaine** : Le cycle ne passe à la phase de développement *que* si vous validez cette spec.
+
+## 📚 Une Documentation vivante pour le futur
+
+C'est ici que réside la véritable puissance du système : le fichier généré dans `docs/` n'est pas un déchet technique. Il devient la **documentation officielle** de la fonctionnalité.
+
+- **Zéro dérive documentaire** : Comme le code est généré *à partir* de ce fichier, la doc est par définition toujours à jour.
+- **Onboarding instantané** : Un nouveau développeur (ou une nouvelle instance d'IA) n'a qu'à lire le dossier `docs/` pour comprendre l'intégralité des contrats et de la logique métier, sans avoir à déchiffrer des milliers de lignes de code.
+- **Patrimoine technique** : Vous constituez un historique clair et structuré de chaque décision technique, indexé et facile à maintenir.
+
+<Callout type="tip">
+💡 En SDD, vous ne documentez pas ce que vous avez fait. Vous décidez ce que vous allez faire, et la documentation devient le moteur de la création.
+</Callout>
+
+## 🚀 Pourquoi le PM doit être une IA ?
+
+- **Vitesse** : Transformer une idée floue en spec technique prend 30 secondes au lieu de 2 heures.
+- **Rigueur** : L'IA n'oublie jamais de demander le format des dates ou la stratégie de retry des APIs.
+- **Synchronisation** : La spec devient la "Source of Truth" partagée par tous les autres agents (Engineer, Tester, Reviewer).
+
+## 🌈 Conclusion
+
+Le **Spec-Driven Development** déplace l'effort du code vers la conception. En forçant un passage par une étape de spécification MD écrite par une IA spécialisée, vous garantissez que l'implémentation qui suivra sera chirurgicale.
+
+**Dans le prochain article**, nous verrons comment cette spec MD est consommée en séquence par une équipe d'agents spécialisés (Engineer, Tester, Reviewer).
+
+---
+
+*Curieux de voir la spec en action ? Allez voir le [pipeline sur GitHub](https://github.com/CrokNoks/ai-driven-development-boilerplate) !*
