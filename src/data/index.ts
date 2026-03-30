@@ -63,18 +63,6 @@ export const aboutStats = [
 
 export const projects: Project[] = [
   {
-    id: "1",
-    title: "Mobilio.mobi",
-    description:
-      "Application SaaS pour déménageurs avec élaboration de devis et calcule de volume",
-    image: "/projects/mobilio.jpg",
-    technologies: ["NestJS", "ExpressJS", "React", "React-Admin", "Node.js"],
-    githubUrl: "https://github.com/CrokNoks",
-    liveUrl: "https://mobilio.mobi",
-    featured: true,
-    category: "web",
-  },
-  {
     id: "2",
     title: "Bibliothèque Lego Manager",
     description:
@@ -107,6 +95,16 @@ export const projects: Project[] = [
     liveUrl: "https://www.lucas-guerrier.fr",
     featured: true,
     category: "web",
+  },
+  {
+    id: "6",
+    githubUrl: "https://github.com/CrokNoks/ai-driven-development-boilerplate",
+    title: "AI-Driven Development Boilerplate",
+    description: "Boilerplate de développement full stack intégrant des outils d'IA pour accélérer la création d'applications web modernes.",
+    image: "/projects/ai-boilerplate.jpg",
+    technologies: ["Markdown"],
+    featured: true,
+    category: "AI"
   },
 ];
 
@@ -250,25 +248,25 @@ export const softSkills: Skill[] = [
 export const skills = [...technicalSkills, ...softSkills];
 
 export const hobbies: Hobby[] = [
-  { 
-    id: "1", 
-    label: "Jeux Vidéos", 
+  {
+    id: "1",
+    label: "Jeux Vidéos",
     description: "Passionné de jeux vidéo depuis l'enfance, j'apprécie particulièrement les RPG, les jeux de stratégie et les sandbox.",
     icon: Gamepad2,
-    skills: ["Gestion des ressources et optimisation", "Prise de décision et responsabilité","Créativité opérationnelle", "Persévérance"]
+    skills: ["Gestion des ressources et optimisation", "Prise de décision et responsabilité", "Créativité opérationnelle", "Persévérance"]
   },
-  { 
-    id: "2", 
-    label: "Lego", 
+  {
+    id: "2",
+    label: "Lego",
     description: "Collectionneur de sets Lego, j'aime construire des modèles complexes et créatifs.",
     icon: Package,
     skills: ["Rigueur et suivi de processus", "Créativité", "Patience"]
   },
-  { 
-    id: "3", 
-    label: "Films & Séries", 
+  {
+    id: "3",
+    label: "Films & Séries",
     description: "Grand amateur de cinéma et de séries, j'apprécie la science fiction et le fantastique.",
     icon: Film,
-    skills: ["Ouverture d'esprit et adaptabilité", "Capacité d'abstraction","Curiosité intellectuelle"]
+    skills: ["Ouverture d'esprit et adaptabilité", "Capacité d'abstraction", "Curiosité intellectuelle"]
   }
 ];

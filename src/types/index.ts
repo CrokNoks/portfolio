@@ -7,7 +7,7 @@ export interface Project {
   githubUrl?: string;
   liveUrl?: string;
   featured: boolean;
-  category: 'web' | 'mobile' | 'design' | 'other' | 'SDK';
+  category: 'web' | 'mobile' | 'design' | 'other' | 'SDK' | 'AI';
 }
 
 export interface Experience {
